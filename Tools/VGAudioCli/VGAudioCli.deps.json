@@ -1,0 +1,39 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v10.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v10.0": {
+      "VGAudioCli/2.2.1": {
+        "dependencies": {
+          "VGAudio": "2.2.1"
+        },
+        "runtime": {
+          "VGAudioCli.dll": {}
+        }
+      },
+      "VGAudio/2.2.1": {
+        "runtime": {
+          "VGAudio.dll": {
+            "assemblyVersion": "2.2.1.0",
+            "fileVersion": "2.2.1.0"
+          }
+        }
+      }
+    }
+  },
+  "libraries": {
+    "VGAudioCli/2.2.1": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "VGAudio/2.2.1": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}

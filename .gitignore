@@ -1,0 +1,17 @@
+.vs
+.vscode
+
+*.sln
+*vcxproj
+*vcxproj.*
+
+*.dll.recipe
+*.log
+*.lastbuildstate
+
+/Binaries
+/Intermediate
+
+Makefile
+*.make
+*.spv
