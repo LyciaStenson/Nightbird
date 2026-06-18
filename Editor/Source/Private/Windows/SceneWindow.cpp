@@ -19,7 +19,6 @@ namespace Nightbird::Editor
 		: ImGuiWindow("Scene", open, { .flags = ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse, .padding = ImVec2(4.0f, 4.0f) }), m_Context(context)
 	{
 		m_Surface = context.GetEngine().GetRenderer().CreateOffscreenSurface(m_CurrentWidth, m_CurrentHeight, Core::RenderSurfaceFormat::Default);
-
 		m_TextureId = m_Context.GetEditorUIBackend().RegisterSurface(*m_Surface);
 
 		m_Camera = std::make_unique<Core::Camera>();

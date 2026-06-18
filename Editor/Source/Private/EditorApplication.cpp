@@ -3,6 +3,7 @@
 #include "Core/Scene.h"
 #include "Core/BackendFactory.h"
 #include "Core/SceneObject.h"
+#include "Core/Camera.h"
 #include "Core/Log.h"
 
 #include "EditorBackendFactory.h"
@@ -11,6 +12,7 @@
 #include "Scene/TextSceneReader.h"
 
 #include "Windows/BuildWindow.h"
+#include "Windows/AppViewWindow.h"
 #include "Windows/SceneWindow.h"
 #include "Windows/SceneOutliner.h"
 #include "Windows/Inspector.h"
@@ -214,6 +216,7 @@ namespace Nightbird::Editor
 		m_WindowManager = std::make_unique<WindowManager>();
 
 		m_WindowManager->AddWindow<BuildWindow>(*m_EditorContext);
+		m_WindowManager->AddWindow<AppViewWindow>(*m_EditorContext);
 		m_WindowManager->AddWindow<SceneWindow>(*m_EditorContext);
 		m_WindowManager->AddWindow<SceneOutliner>(*m_EditorContext);
 		m_WindowManager->AddWindow<Inspector>(*m_EditorContext);
@@ -270,7 +273,7 @@ namespace Nightbird::Editor
 		if (!m_Engine->GetRenderer().BeginFrame(surface))
 			return;
 
-		auto* sceneWindow = m_WindowManager->GetWindow<Editor::SceneWindow>();
+		auto* sceneWindow = m_WindowManager->GetWindow<SceneWindow>();
 		if (sceneWindow && sceneWindow->IsOpen())
 		{
 			if (sceneWindow->NeedsResize())
@@ -281,6 +284,21 @@ namespace Nightbird::Editor
 			m_Engine->GetRenderer().BeginFrame(sceneWindow->GetSurface());
 			m_Engine->GetRenderer().DrawScene(sceneWindow->GetSurface());
 			m_Engine->GetRenderer().EndFrame(sceneWindow->GetSurface());
+		}
+
+		auto* appViewWindow = m_WindowManager->GetWindow<AppViewWindow>();
+		if (appViewWindow && appViewWindow->IsOpen())
+		{
+			if (appViewWindow->NeedsResize())
+				appViewWindow->Resize(appViewWindow->GetPendingWidth(), appViewWindow->GetPendingHeight());
+
+			Core::Scene& scene = m_Engine->GetScene();
+			if (Core::Camera* camera = scene.GetActiveCamera())
+				m_Engine->GetRenderer().SubmitScene(scene, *camera);
+
+			m_Engine->GetRenderer().BeginFrame(appViewWindow->GetSurface());
+			m_Engine->GetRenderer().DrawScene(appViewWindow->GetSurface());
+			m_Engine->GetRenderer().EndFrame(appViewWindow->GetSurface());
 		}
 
 		m_EditorUIBackend->BeginFrame();

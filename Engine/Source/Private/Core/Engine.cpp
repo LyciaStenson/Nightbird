@@ -50,8 +50,10 @@ namespace Nightbird::Core
 
 		m_Platform.Update();
 		m_InputSystem.Update(m_Platform.GetInputProvider());
-		m_Scene->Update(m_DeltaTime);
 
+		if (m_Simulate)
+			m_Scene->Update(m_DeltaTime);
+		
 		return m_DeltaTime;
 	}
 
