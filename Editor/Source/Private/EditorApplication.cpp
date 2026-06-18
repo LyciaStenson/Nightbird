@@ -202,6 +202,9 @@ namespace Nightbird::Editor
 		InitializeEditorUI();
 
 		m_Renderer->InitializeSurface(m_WindowManager->GetWindow<SceneWindow>()->GetSurface());
+
+		// Unnecessary as render resources already created for identical SceneWindow surface
+		//m_Renderer->InitializeSurface(m_WindowManager->GetWindow<AppViewWindow>()->GetSurface());
 	}
 
 	void EditorApplication::InitializeSettings()
@@ -272,35 +275,7 @@ namespace Nightbird::Editor
 		auto& surface = m_Engine->GetRenderer().GetDefaultSurface();
 		if (!m_Engine->GetRenderer().BeginFrame(surface))
 			return;
-
-		auto* sceneWindow = m_WindowManager->GetWindow<SceneWindow>();
-		if (sceneWindow && sceneWindow->IsOpen())
-		{
-			if (sceneWindow->NeedsResize())
-				sceneWindow->Resize(sceneWindow->GetPendingWidth(), sceneWindow->GetPendingHeight());
-
-			m_Engine->GetRenderer().SubmitScene(m_Engine->GetScene(), sceneWindow->GetCamera());
-
-			m_Engine->GetRenderer().BeginFrame(sceneWindow->GetSurface());
-			m_Engine->GetRenderer().DrawScene(sceneWindow->GetSurface());
-			m_Engine->GetRenderer().EndFrame(sceneWindow->GetSurface());
-		}
-
-		auto* appViewWindow = m_WindowManager->GetWindow<AppViewWindow>();
-		if (appViewWindow && appViewWindow->IsOpen())
-		{
-			if (appViewWindow->NeedsResize())
-				appViewWindow->Resize(appViewWindow->GetPendingWidth(), appViewWindow->GetPendingHeight());
-
-			Core::Scene& scene = m_Engine->GetScene();
-			if (Core::Camera* camera = scene.GetActiveCamera())
-				m_Engine->GetRenderer().SubmitScene(scene, *camera);
-
-			m_Engine->GetRenderer().BeginFrame(appViewWindow->GetSurface());
-			m_Engine->GetRenderer().DrawScene(appViewWindow->GetSurface());
-			m_Engine->GetRenderer().EndFrame(appViewWindow->GetSurface());
-		}
-
+		
 		m_EditorUIBackend->BeginFrame();
 		m_EditorUI->Render();
 		m_EditorUIBackend->EndFrame();
