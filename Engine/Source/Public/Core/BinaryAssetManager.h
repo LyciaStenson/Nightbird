@@ -8,6 +8,7 @@
 #include "Core/MeshLoader.h"
 #include "Core/MaterialLoader.h"
 #include "Core/TextureLoader.h"
+#include "Core/CubemapLoader.h"
 #include "Core/AudioLoader.h"
 
 #include <uuid.h>
@@ -46,6 +47,7 @@ namespace Nightbird::Core
 		std::unique_ptr<BinarySceneReader> m_SceneReader;
 		std::unique_ptr<ProjectLoader> m_ProjectLoader;
 		std::unique_ptr<TextureLoader> m_TextureLoader;
+		std::unique_ptr<CubemapLoader> m_CubemapLoader;
 		std::unique_ptr<MaterialLoader> m_MaterialLoader;
 		std::unique_ptr<MeshLoader> m_MeshLoader;
 		std::unique_ptr<AudioLoader> m_AudioLoader;

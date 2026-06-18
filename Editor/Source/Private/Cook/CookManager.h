@@ -6,6 +6,7 @@
 #include "Cook/Target.h"
 #include "Cook/ProjectCooker.h"
 #include "Cook/TextureCooker.h"
+#include "Cook/CubemapCooker.h"
 #include "Cook/MaterialCooker.h"
 #include "Cook/MeshCooker.h"
 #include "Cook/AudioCooker.h"
@@ -25,6 +26,7 @@ namespace Nightbird::Core
 	class Mesh;
 	struct Material;
 	class Texture;
+	class Cubemap;
 }
 
 namespace Nightbird::Editor
@@ -49,11 +51,13 @@ namespace Nightbird::Editor
 		
 		ProjectCooker m_ProjectCooker;
 		TextureCooker m_TextureCooker;
+		CubemapCooker m_CubemapCooker;
 		MaterialCooker m_MaterialCooker;
 		MeshCooker m_MeshCooker;
 		AudioCooker m_AudioCooker;
 
 		std::unordered_map<const Core::Texture*, uuids::uuid> m_TextureUUIDs;
+		std::unordered_map<uuids::uuid, const AssetInfo*> m_CubemapUUIDs;
 		std::unordered_map<const Core::Material*, uuids::uuid> m_MaterialUUIDs;
 		std::unordered_map<const Core::Mesh*, uuids::uuid> m_MeshUUIDs;
 
@@ -70,6 +74,7 @@ namespace Nightbird::Editor
 
 		void CookSceneInternal(Core::SceneReadResult&, CookTarget target);
 		void CookTextures(const std::filesystem::path& outputDir, CookTarget target, Endianness endianness);
+		void CookCubemaps(const std::filesystem::path& outputDir, CookTarget target, Endianness endianness);
 		void CookMaterials(const std::filesystem::path& outputDir, Endianness endianness);
 		void CookMeshes(const std::filesystem::path& outputDir, Endianness endianness);
 		void CookAudio(const std::filesystem::path& outputDir, CookTarget target, Endianness endianness);

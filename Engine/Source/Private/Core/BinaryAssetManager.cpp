@@ -43,7 +43,7 @@ namespace Nightbird::Core
 
 	std::shared_ptr<Cubemap> BinaryAssetManager::LoadCubemap(const uuids::uuid& uuid)
 	{
-		return nullptr;
+		return m_CubemapLoader->Load(m_CookedDir, uuid);
 	}
 
 	std::shared_ptr<AudioAsset> BinaryAssetManager::LoadAudio(const uuids::uuid& uuid)

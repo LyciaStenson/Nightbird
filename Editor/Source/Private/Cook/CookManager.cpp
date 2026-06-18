@@ -3,6 +3,7 @@
 #include "Core/AssetManager.h"
 #include "Core/AudioSource.h"
 #include "Core/MeshInstance.h"
+#include "Core/Skybox.h"
 #include "Core/Texture.h"
 #include "Core/Material.h"
 #include "Core/Mesh.h"
@@ -47,6 +48,7 @@ namespace Nightbird::Editor
 	void CookManager::CookSceneInternal(Core::SceneReadResult& result, CookTarget target)
 	{
 		m_TextureUUIDs.clear();
+		m_CubemapUUIDs.clear();
 		m_MaterialUUIDs.clear();
 		m_MeshUUIDs.clear();
 		m_AudioPathUUIDs.clear();
@@ -60,6 +62,7 @@ namespace Nightbird::Editor
 		CollectAssets(result.root.get());
 		
 		CookTextures(m_CookOutputDir, target, m_Endianness);
+		CookCubemaps(m_CookOutputDir, target, m_Endianness);
 		CookMaterials(m_CookOutputDir, m_Endianness);
 		CookMeshes(m_CookOutputDir, m_Endianness);
 		CookAudio(m_CookOutputDir, target, m_Endianness);
@@ -145,6 +148,20 @@ namespace Nightbird::Editor
 				}
 			}
 		}
+		else if (auto* skybox = Cast<Core::Skybox>(object))
+		{
+			Core::Log::Info("CookManager: Found MeshInstance: " + object->GetName());
+
+			uuids::uuid cubemapUUID = skybox->m_Cubemap.GetUUID();
+			if (!cubemapUUID.is_nil() && m_CubemapUUIDs.find(cubemapUUID) == m_CubemapUUIDs.end())
+			{
+				const AssetInfo* assetInfo = m_ImportManager.GetAssetInfo(cubemapUUID);
+				if (assetInfo)
+					m_CubemapUUIDs[cubemapUUID] = assetInfo;
+				else
+					Core::Log::Warning("CookManager: No asset info found for cubemap: " + uuids::to_string(cubemapUUID));
+			}
+		}
 		else if (auto* audioSource = Cast<Core::AudioSource>(object))
 		{
 			Core::Log::Info("CookManager: Found AudioSouce: " + object->GetName());
@@ -169,6 +186,15 @@ namespace Nightbird::Editor
 	{
 		for (const auto& [texture, uuid] : m_TextureUUIDs)
 			m_TextureCooker.Cook(*texture, uuid, outputDir, target, endianness);
+	}
+
+	void CookManager::CookCubemaps(const std::filesystem::path& outputDir, CookTarget target, Endianness endianness)
+	{
+		for (const auto& [uuid, assetInfo] : m_CubemapUUIDs)
+		{
+			if (assetInfo)
+				m_CubemapCooker.Cook(*assetInfo, outputDir, m_ImportManager, target, endianness);
+		}
 	}
 
 	void CookManager::CookMaterials(const std::filesystem::path& outputDir, Endianness endianness)
