@@ -24,6 +24,12 @@ namespace Nightbird::Core
 		if (m_Scene)
 			m_Scene->SetEngine(this);
 
+#ifdef NB_EDITOR_BUILD
+		m_Simulate = false;
+#else
+		m_Simulate = true;
+#endif
+
 		static volatile int sink = 0;
 		sink += nb_link_AudioSource;
 		sink += nb_link_Skybox;
@@ -50,8 +56,10 @@ namespace Nightbird::Core
 
 		m_Platform.Update();
 		m_InputSystem.Update(m_Platform.GetInputProvider());
-		m_Scene->Update(m_DeltaTime);
 
+		if (m_Simulate)
+			m_Scene->Update(m_DeltaTime);
+		
 		return m_DeltaTime;
 	}
 

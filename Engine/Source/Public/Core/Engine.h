@@ -35,6 +35,8 @@ namespace Nightbird::Core
 
 		float GetDeltaTime() const;
 
+		bool m_Simulate = false;
+
 	private:
 		Platform& m_Platform;
 		Renderer& m_Renderer;

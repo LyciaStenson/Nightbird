@@ -3,6 +3,7 @@
 #include "Core/Scene.h"
 #include "Core/BackendFactory.h"
 #include "Core/SceneObject.h"
+#include "Core/Camera.h"
 #include "Core/Log.h"
 
 #include "EditorBackendFactory.h"
@@ -11,6 +12,7 @@
 #include "Scene/TextSceneReader.h"
 
 #include "Windows/BuildWindow.h"
+#include "Windows/AppViewWindow.h"
 #include "Windows/SceneWindow.h"
 #include "Windows/SceneOutliner.h"
 #include "Windows/Inspector.h"
@@ -200,6 +202,9 @@ namespace Nightbird::Editor
 		InitializeEditorUI();
 
 		m_Renderer->InitializeSurface(m_WindowManager->GetWindow<SceneWindow>()->GetSurface());
+
+		// Unnecessary as render resources already created for identical SceneWindow surface
+		//m_Renderer->InitializeSurface(m_WindowManager->GetWindow<AppViewWindow>()->GetSurface());
 	}
 
 	void EditorApplication::InitializeSettings()
@@ -214,6 +219,7 @@ namespace Nightbird::Editor
 		m_WindowManager = std::make_unique<WindowManager>();
 
 		m_WindowManager->AddWindow<BuildWindow>(*m_EditorContext);
+		m_WindowManager->AddWindow<AppViewWindow>(*m_EditorContext);
 		m_WindowManager->AddWindow<SceneWindow>(*m_EditorContext);
 		m_WindowManager->AddWindow<SceneOutliner>(*m_EditorContext);
 		m_WindowManager->AddWindow<Inspector>(*m_EditorContext);
@@ -269,20 +275,7 @@ namespace Nightbird::Editor
 		auto& surface = m_Engine->GetRenderer().GetDefaultSurface();
 		if (!m_Engine->GetRenderer().BeginFrame(surface))
 			return;
-
-		auto* sceneWindow = m_WindowManager->GetWindow<Editor::SceneWindow>();
-		if (sceneWindow && sceneWindow->IsOpen())
-		{
-			if (sceneWindow->NeedsResize())
-				sceneWindow->Resize(sceneWindow->GetPendingWidth(), sceneWindow->GetPendingHeight());
-
-			m_Engine->GetRenderer().SubmitScene(m_Engine->GetScene(), sceneWindow->GetCamera());
-
-			m_Engine->GetRenderer().BeginFrame(sceneWindow->GetSurface());
-			m_Engine->GetRenderer().DrawScene(sceneWindow->GetSurface());
-			m_Engine->GetRenderer().EndFrame(sceneWindow->GetSurface());
-		}
-
+		
 		m_EditorUIBackend->BeginFrame();
 		m_EditorUI->Render();
 		m_EditorUIBackend->EndFrame();

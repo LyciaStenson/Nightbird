@@ -59,6 +59,9 @@ namespace Nightbird::Vulkan
 
 	void Renderer::InitializeSurface(Core::RenderSurface& coreSurface)
 	{
+		if (m_OpaquePipeline)
+			return;
+
 		RenderSurface& surface = static_cast<RenderSurface&>(coreSurface);
 		RenderPass& renderPass = surface.GetRenderPass();
 
