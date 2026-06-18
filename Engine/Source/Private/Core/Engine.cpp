@@ -24,6 +24,12 @@ namespace Nightbird::Core
 		if (m_Scene)
 			m_Scene->SetEngine(this);
 
+#ifdef NB_EDITOR_BUILD
+		m_Simulate = false;
+#else
+		m_Simulate = true;
+#endif
+
 		static volatile int sink = 0;
 		sink += nb_link_AudioSource;
 		sink += nb_link_Skybox;
