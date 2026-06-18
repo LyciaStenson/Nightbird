@@ -33,7 +33,7 @@ namespace Nightbird::Core
 		uint32_t version = reader.ReadUInt32();
 		if (version != 1)
 		{
-			Log::Error("TextureLoader: Unsupported version: " + std::to_string(version));
+			Log::Error("TextureLoader: Unsupported version " + std::to_string(version) + " in: " + path);
 			return nullptr;
 		}
 
