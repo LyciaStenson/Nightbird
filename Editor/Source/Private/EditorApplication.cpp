@@ -13,7 +13,7 @@
 
 #include "Windows/BuildWindow.h"
 #include "Windows/AppViewWindow.h"
-#include "Windows/SceneWindow.h"
+#include "Windows/SceneViewWindow.h"
 #include "Windows/SceneOutliner.h"
 #include "Windows/Inspector.h"
 #include "Windows/AssetBrowser.h"
@@ -201,9 +201,9 @@ namespace Nightbird::Editor
 		InitializeWindows();
 		InitializeEditorUI();
 
-		m_Renderer->InitializeSurface(m_WindowManager->GetWindow<SceneWindow>()->GetSurface());
+		m_Renderer->InitializeSurface(m_WindowManager->GetWindow<SceneViewWindow>()->GetSurface());
 
-		// Unnecessary as render resources already created for identical SceneWindow surface
+		// Unnecessary as render resources already created for identical SceneViewWindow surface
 		//m_Renderer->InitializeSurface(m_WindowManager->GetWindow<AppViewWindow>()->GetSurface());
 	}
 
@@ -220,7 +220,7 @@ namespace Nightbird::Editor
 
 		m_WindowManager->AddWindow<BuildWindow>(*m_EditorContext);
 		m_WindowManager->AddWindow<AppViewWindow>(*m_EditorContext);
-		m_WindowManager->AddWindow<SceneWindow>(*m_EditorContext);
+		m_WindowManager->AddWindow<SceneViewWindow>(*m_EditorContext);
 		m_WindowManager->AddWindow<SceneOutliner>(*m_EditorContext);
 		m_WindowManager->AddWindow<Inspector>(*m_EditorContext);
 		m_WindowManager->AddWindow<AssetBrowser>(*m_EditorContext);

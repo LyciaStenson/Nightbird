@@ -14,11 +14,11 @@ namespace Nightbird::Editor
 {
 	class EditorContext;
 	
-	class SceneWindow : public ViewWindow
+	class SceneViewWindow : public ViewWindow
 	{
 	public:
 		NB_TYPE()
-		SceneWindow(EditorContext& context, bool open = true);
+		SceneViewWindow(EditorContext& context, bool open = true);
 
 	protected:
 		void OnRender() override;
