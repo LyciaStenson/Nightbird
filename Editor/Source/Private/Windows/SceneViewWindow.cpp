@@ -1,4 +1,4 @@
-#include "Windows/SceneWindow.h"
+#include "Windows/SceneViewWindow.h"
 
 #include "EditorContext.h"
 #include "EditorUIBackend.h"
@@ -11,22 +11,22 @@
 #include "Core/Camera.h"
 #include "Core/Log.h"
 
-NB_REFLECT_NO_FIELDS(Nightbird::Editor::SceneWindow, NB_PARENT(Nightbird::Editor::ViewWindow), NB_NO_FACTORY)
+NB_REFLECT_NO_FIELDS(Nightbird::Editor::SceneViewWindow, NB_PARENT(Nightbird::Editor::ViewWindow), NB_NO_FACTORY)
 
 namespace Nightbird::Editor
 {
-	SceneWindow::SceneWindow(EditorContext& context, bool open)
-		: ViewWindow(context, "Scene", open)
+	SceneViewWindow::SceneViewWindow(EditorContext& context, bool open)
+		: ViewWindow(context, "Scene View", open)
 	{
 		m_Camera = std::make_unique<Core::Camera>();
 	}
 
-	Core::Camera* SceneWindow::GetCamera()
+	Core::Camera* SceneViewWindow::GetCamera()
 	{
 		return m_Camera.get();
 	}
 
-	void SceneWindow::OnRender()
+	void SceneViewWindow::OnRender()
 	{
 		static bool rightMouseHeld = false;
 		static bool firstFrame = true;
