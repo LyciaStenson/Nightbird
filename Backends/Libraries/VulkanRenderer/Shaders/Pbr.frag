@@ -125,9 +125,7 @@ void main()
 		color += (diffuse + specular) * lightColor * intensity * attenuation;
 	}
 
-	//color *= baseColor.rgb;
-
-	color = baseColor.rgb;
+	color *= baseColor.rgb;
 
 	vec3 gammaCorrected = pow(color, vec3(1.0 / 2.2));
 	outColor = vec4(gammaCorrected, baseColor.a);
