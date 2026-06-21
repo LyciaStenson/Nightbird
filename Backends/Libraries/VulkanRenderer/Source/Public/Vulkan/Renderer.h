@@ -10,6 +10,7 @@
 #include "Core/Renderable.h"
 #include "Core/DirectionalLight.h"
 #include "Core/PointLight.h"
+#include "Core/AmbientLight.h"
 #include "Core/Skybox.h"
 
 #include "Vulkan/Instance.h"
@@ -17,7 +18,6 @@
 #include "Vulkan/SwapChain.h"
 #include "Vulkan/Sync.h"
 #include "Vulkan/DescriptorSetLayoutManager.h"
-#include "Vulkan/EnvironmentDescriptorSetManager.h"
 #include "Vulkan/FrameDescriptorSetManager.h"
 #include "Vulkan/Pipeline.h"
 #include "Vulkan/Geometry.h"
@@ -84,8 +84,7 @@ namespace Nightbird::Vulkan
 
 		std::unique_ptr<DescriptorSetLayoutManager> m_DescriptorSetLayoutManager;
 		std::unique_ptr<FrameDescriptorSetManager> m_FrameDescriptorSetManager;
-		std::unique_ptr<EnvironmentDescriptorSetManager> m_EnvironmentDescriptorSetManager;
-
+		
 		std::unique_ptr<Pipeline> m_OpaquePipeline;
 		std::unique_ptr<Pipeline> m_TransparentPipeline;
 		std::unique_ptr<Pipeline> m_SkyboxPipeline;
@@ -100,8 +99,9 @@ namespace Nightbird::Vulkan
 		const Core::Camera* m_ActiveCamera = nullptr;
 
 		std::vector<Core::Renderable> m_Renderables;
-		std::vector<Core::DirectionalLight*> m_DirectionalLights;
-		std::vector<Core::PointLight*> m_PointLights;
+		std::vector<const Core::DirectionalLight*> m_DirectionalLights;
+		std::vector<const Core::PointLight*> m_PointLights;
+		const Core::AmbientLight* m_AmbientLight = nullptr;
 		const Core::Skybox* m_Skybox = nullptr;
 		std::unique_ptr<Geometry> m_SkyboxGeometry;
 

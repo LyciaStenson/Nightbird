@@ -1,6 +1,6 @@
 #version 450
 
-layout(set = 1, binding = 0) uniform samplerCube skyboxSampler;
+layout(set = 0, binding = 6) uniform samplerCube skyboxSampler;
 
 layout(location = 0) in vec3 fragDir;
 

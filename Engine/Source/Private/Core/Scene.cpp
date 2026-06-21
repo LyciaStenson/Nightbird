@@ -64,25 +64,30 @@ namespace Nightbird::Core
 		return renderables;
 	}
 
-	std::vector<DirectionalLight*> Scene::CollectDirectionalLights() const
+	std::vector<const DirectionalLight*> Scene::CollectDirectionalLights() const
 	{
-		std::vector<DirectionalLight*> directionalLights;
+		std::vector<const DirectionalLight*> directionalLights;
 		CollectDirectionalLightsRecursive(m_Root.get(), directionalLights);
 		return directionalLights;
 	}
 
-	std::vector<PointLight*> Scene::CollectPointLights() const
+	std::vector<const PointLight*> Scene::CollectPointLights() const
 	{
-		std::vector<PointLight*> pointLights;
+		std::vector<const PointLight*> pointLights;
 		CollectPointLightsRecursive(m_Root.get(), pointLights);
 		return pointLights;
+	}
+
+	const AmbientLight* Scene::FindAmbientLight() const
+	{
+		return FindAmbientLightRecursive(m_Root.get());
 	}
 
 	const Skybox* Scene::FindSkybox() const
 	{
 		return FindSkyboxRecursive(m_Root.get());
 	}
-
+	
 	void Scene::UpdateRecursive(SceneObject* object, float delta)
 	{
 		if (!object)
@@ -117,7 +122,7 @@ namespace Nightbird::Core
 			CollectRenderablesRecursive(child.get(), renderables);
 	}
 
-	void Scene::CollectDirectionalLightsRecursive(SceneObject* object, std::vector<DirectionalLight*>& directionalLights) const
+	void Scene::CollectDirectionalLightsRecursive(SceneObject* object, std::vector<const DirectionalLight*>& directionalLights) const
 	{
 		if (!object)
 			return;
@@ -129,7 +134,7 @@ namespace Nightbird::Core
 			CollectDirectionalLightsRecursive(child.get(), directionalLights);
 	}
 	
-	void Scene::CollectPointLightsRecursive(SceneObject* object, std::vector<PointLight*>& pointLights) const
+	void Scene::CollectPointLightsRecursive(SceneObject* object, std::vector<const PointLight*>& pointLights) const
 	{
 		if (!object)
 			return;
@@ -139,6 +144,20 @@ namespace Nightbird::Core
 
 		for (const auto& child : object->GetChildren())
 			CollectPointLightsRecursive(child.get(), pointLights);
+	}
+
+	const AmbientLight* Scene::FindAmbientLightRecursive(const SceneObject* object) const
+	{
+		if (!object)
+			return nullptr;
+		if (const auto* ambientLight = Cast<AmbientLight>(object))
+			return ambientLight;
+		for (const auto& child : object->GetChildren())
+		{
+			if (const auto* ambientLight = FindAmbientLightRecursive(child.get()))
+				return ambientLight;
+		}
+		return nullptr;
 	}
 
 	const Skybox* Scene::FindSkyboxRecursive(const SceneObject* object) const

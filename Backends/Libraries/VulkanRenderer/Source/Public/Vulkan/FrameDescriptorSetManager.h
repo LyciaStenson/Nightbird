@@ -12,9 +12,8 @@ namespace Nightbird::Vulkan
 	class UniformBuffer;
 	struct CameraUBO;
 	struct DirectionalLightData;
-	struct DirectionalLightMetaUBO;
 	struct PointLightData;
-	struct PointLightMetaUBO;
+	struct AmbientLightData;
 
 	class FrameDescriptorSetManager
 	{
@@ -26,6 +25,8 @@ namespace Nightbird::Vulkan
 		void UpdateCamera(uint32_t frameIndex, const CameraUBO& cameraUBO);
 		void UpdateDirectionalLights(uint32_t frameIndex, const std::vector<DirectionalLightData>& directionalLights);
 		void UpdatePointLights(uint32_t frameIndex, const std::vector<PointLightData>& pointLights);
+		void UpdateAmbientLight(uint32_t frameIndex, AmbientLightData& ambientLight);
+		void UpdateSkybox(uint32_t frameIndex, VkImageView imageView, VkSampler sampler);
 
 	private:
 		Device* m_Device;
@@ -37,7 +38,8 @@ namespace Nightbird::Vulkan
 		std::vector<UniformBuffer> m_DirectionalLightMetaBuffers;
 		std::vector<StorageBuffer> m_PointLightBuffers;
 		std::vector<UniformBuffer> m_PointLightMetaBuffers;
-
+		std::vector<UniformBuffer> m_AmbientLightBuffers;
+		
 		void CreateBuffers();
 		void CreateDescriptorSets(VkDescriptorSetLayout layout, VkDescriptorPool pool);
 	};
