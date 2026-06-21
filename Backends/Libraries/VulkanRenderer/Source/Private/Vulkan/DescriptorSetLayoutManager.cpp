@@ -10,7 +10,6 @@ namespace Nightbird::Vulkan
 	DescriptorSetLayoutManager::DescriptorSetLayoutManager(Device* device)
 		: m_Device(device)
 	{
-		CreateEnvironmentDescriptorSetLayout();
 		CreateFrameDescriptorSetLayout();
 		CreateMeshDescriptorSetLayout();
 		CreateMaterialDescriptorSetLayout();
@@ -18,7 +17,6 @@ namespace Nightbird::Vulkan
 
 	DescriptorSetLayoutManager::~DescriptorSetLayoutManager()
 	{
-		vkDestroyDescriptorSetLayout(m_Device->GetLogical(), m_EnvironmentDescriptorSetLayout, nullptr);
 		vkDestroyDescriptorSetLayout(m_Device->GetLogical(), m_FrameDescriptorSetLayout, nullptr);
 		vkDestroyDescriptorSetLayout(m_Device->GetLogical(), m_MeshDescriptorSetLayout, nullptr);
 		vkDestroyDescriptorSetLayout(m_Device->GetLogical(), m_MaterialDescriptorSetLayout, nullptr);
@@ -28,12 +26,7 @@ namespace Nightbird::Vulkan
 	{
 		return m_FrameDescriptorSetLayout;
 	}
-	
-	VkDescriptorSetLayout DescriptorSetLayoutManager::GetEnvironmentDescriptorSetLayout() const
-	{
-		return m_EnvironmentDescriptorSetLayout;
-	}
-	
+
 	VkDescriptorSetLayout DescriptorSetLayoutManager::GetMeshDescriptorSetLayout() const
 	{
 		return m_MeshDescriptorSetLayout;
@@ -75,10 +68,22 @@ namespace Nightbird::Vulkan
 		pointLightsMetaBinding.descriptorCount = 1;
 		pointLightsMetaBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
 		pointLightsMetaBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+		
+		VkDescriptorSetLayoutBinding ambientLightBinding{};
+		ambientLightBinding.binding = 5;
+		ambientLightBinding.descriptorCount = 1;
+		ambientLightBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+		ambientLightBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
 
-		std::array<VkDescriptorSetLayoutBinding, 5> bindings = {
+		VkDescriptorSetLayoutBinding skyboxBinding{};
+		skyboxBinding.binding = 6;
+		skyboxBinding.descriptorCount = 1;
+		skyboxBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+		skyboxBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+
+		std::array<VkDescriptorSetLayoutBinding, 7> bindings = {
 			cameraBinding, directionalLightsBinding, directionalLightsMetaBinding,
-			pointLightsBinding, pointLightsMetaBinding
+			pointLightsBinding, pointLightsMetaBinding, ambientLightBinding, skyboxBinding
 		};
 
 		VkDescriptorSetLayoutCreateInfo layoutInfo{};
@@ -89,25 +94,6 @@ namespace Nightbird::Vulkan
 		if (vkCreateDescriptorSetLayout(m_Device->GetLogical(), &layoutInfo, nullptr, &m_FrameDescriptorSetLayout) != VK_SUCCESS)
 		{
 			std::cerr << "Failed to create global descriptor set layout" << std::endl;
-		}
-	}
-
-	void DescriptorSetLayoutManager::CreateEnvironmentDescriptorSetLayout()
-	{
-		VkDescriptorSetLayoutBinding skyboxBinding{};
-		skyboxBinding.binding = 0;
-		skyboxBinding.descriptorCount = 1;
-		skyboxBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-		skyboxBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
-
-		VkDescriptorSetLayoutCreateInfo layoutInfo{};
-		layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
-		layoutInfo.bindingCount = 1;
-		layoutInfo.pBindings = &skyboxBinding;
-
-		if (vkCreateDescriptorSetLayout(m_Device->GetLogical(), &layoutInfo, nullptr, &m_EnvironmentDescriptorSetLayout) != VK_SUCCESS)
-		{
-			std::cerr << "Failed to create environment descriptor set layout" << std::endl;
 		}
 	}
 	

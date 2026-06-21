@@ -28,4 +28,9 @@ namespace Nightbird::Vulkan
 	{
 		uint32_t count;
 	};
+
+	struct alignas(16) AmbientLightData
+	{
+		alignas(16) glm::vec4 colorIntensity;
+	};
 }

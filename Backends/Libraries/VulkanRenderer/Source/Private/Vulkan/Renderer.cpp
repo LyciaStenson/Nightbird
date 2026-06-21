@@ -47,10 +47,9 @@ namespace Nightbird::Vulkan
 
 		m_DescriptorSetLayoutManager = std::make_unique<DescriptorSetLayoutManager>(m_Device.get());
 		m_FrameDescriptorSetManager = std::make_unique<FrameDescriptorSetManager>(m_Device.get(), m_DescriptorSetLayoutManager->GetFrameDescriptorSetLayout(), m_DescriptorPool);
-		m_EnvironmentDescriptorSetManager = std::make_unique<EnvironmentDescriptorSetManager>(m_Device.get(), m_DescriptorSetLayoutManager->GetEnvironmentDescriptorSetLayout(), m_DescriptorPool);
-
+		
 		for (uint32_t i = 0; i < Config::MAX_FRAMES_IN_FLIGHT; ++i)
-			m_EnvironmentDescriptorSetManager->UpdateSkybox(i, m_DefaultCubemap->GetImageView(), m_DefaultCubemap->GetSampler());
+			m_FrameDescriptorSetManager->UpdateSkybox(i, m_DefaultCubemap->GetImageView(), m_DefaultCubemap->GetSampler());
 
 		m_TransformPool = std::make_unique<TransformPool>(m_Device.get(), m_DescriptorPool, m_DescriptorSetLayoutManager.get(), 1000);
 
@@ -90,8 +89,7 @@ namespace Nightbird::Vulkan
 		skyboxConfig.vertexShaderName = "Skybox.vert.spv";
 		skyboxConfig.fragShaderName = "Skybox.frag.spv";
 		skyboxConfig.descriptorSetLayouts = {
-			m_DescriptorSetLayoutManager->GetFrameDescriptorSetLayout(),
-			m_DescriptorSetLayoutManager->GetEnvironmentDescriptorSetLayout()
+			m_DescriptorSetLayoutManager->GetFrameDescriptorSetLayout()
 		};
 		skyboxConfig.depthTestEnable = true;
 		skyboxConfig.depthWriteEnable = false;
@@ -118,7 +116,6 @@ namespace Nightbird::Vulkan
 		m_SkyboxPipeline.reset();
 
 		m_FrameDescriptorSetManager.reset();
-		m_EnvironmentDescriptorSetManager.reset();
 		m_DescriptorSetLayoutManager.reset();
 
 		vkDestroyDescriptorPool(m_Device->GetLogical(), m_DescriptorPool, nullptr);
@@ -143,6 +140,7 @@ namespace Nightbird::Vulkan
 		m_Renderables = scene.CollectRenderables();
 		m_DirectionalLights = scene.CollectDirectionalLights();
 		m_PointLights = scene.CollectPointLights();
+		m_AmbientLight = scene.FindAmbientLight();
 		m_Skybox = scene.FindSkybox();
 	}
 
@@ -306,18 +304,25 @@ namespace Nightbird::Vulkan
 		}
 		m_FrameDescriptorSetManager->UpdatePointLights(frameIndex, pointLightData);
 
+		if (m_AmbientLight)
+		{
+			AmbientLightData ambientLightData;
+			ambientLightData.colorIntensity = glm::vec4(m_AmbientLight->m_Color, m_AmbientLight->m_Intensity);
+			m_FrameDescriptorSetManager->UpdateAmbientLight(frameIndex, ambientLightData);
+		}
+
 		if (m_Skybox)
 		{
 			auto cubemap = m_Skybox->m_Cubemap.Get();
 			if (cubemap)
 			{
 				Texture& texture = GetOrCreateCubemap(cubemap.get());
-				m_EnvironmentDescriptorSetManager->UpdateSkybox(frameIndex, texture.GetImageView(), texture.GetSampler());
+				m_FrameDescriptorSetManager->UpdateSkybox(frameIndex, texture.GetImageView(), texture.GetSampler());
 			}
 		}
 		else
 		{
-			m_EnvironmentDescriptorSetManager->UpdateSkybox(frameIndex, m_DefaultCubemap->GetImageView(), m_DefaultCubemap->GetSampler());
+			m_FrameDescriptorSetManager->UpdateSkybox(frameIndex, m_DefaultCubemap->GetImageView(), m_DefaultCubemap->GetSampler());
 		}
 
 		std::vector<const Core::Renderable*> opaqueRenderables;
@@ -384,9 +389,8 @@ namespace Nightbird::Vulkan
 		vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
 		vkCmdBindIndexBuffer(commandBuffer, m_SkyboxGeometry->GetIndexBuffer(), 0, VK_INDEX_TYPE_UINT16);
 
-		std::array<VkDescriptorSet, 2> descriptorSets = {
-			m_FrameDescriptorSetManager->GetDescriptorSets()[frameIndex],
-			m_EnvironmentDescriptorSetManager->GetDescriptorSets()[frameIndex]
+		std::array<VkDescriptorSet, 1> descriptorSets = {
+			m_FrameDescriptorSetManager->GetDescriptorSets()[frameIndex]
 		};
 
 		vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, m_SkyboxPipeline->GetLayout(), 0, static_cast<uint32_t>(descriptorSets.size()), descriptorSets.data(), 0, nullptr);

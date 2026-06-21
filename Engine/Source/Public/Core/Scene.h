@@ -3,6 +3,7 @@
 #include "Core/Renderable.h"
 #include "Core/DirectionalLight.h"
 #include "Core/PointLight.h"
+#include "Core/AmbientLight.h"
 #include "Core/Skybox.h"
 
 #include <memory>
@@ -33,8 +34,9 @@ namespace Nightbird::Core
 		void ResolveAssets(AssetManager& assetManager);
 
 		std::vector<Renderable> CollectRenderables() const;
-		std::vector<DirectionalLight*> CollectDirectionalLights() const;
-		std::vector<PointLight*> CollectPointLights() const;
+		std::vector<const DirectionalLight*> CollectDirectionalLights() const;
+		std::vector<const PointLight*> CollectPointLights() const;
+		const AmbientLight* FindAmbientLight() const;
 		const Skybox* FindSkybox() const;
 
 	private:
@@ -49,8 +51,9 @@ namespace Nightbird::Core
 		void UpdateRecursive(SceneObject* object, float delta);
 
 		void CollectRenderablesRecursive(SceneObject* object, std::vector<Renderable>& renderables) const;
-		void CollectDirectionalLightsRecursive(SceneObject* object, std::vector<DirectionalLight*>& directionalLights) const;
-		void CollectPointLightsRecursive(SceneObject* object, std::vector<PointLight*>& pointLights) const;
+		void CollectDirectionalLightsRecursive(SceneObject* object, std::vector<const DirectionalLight*>& directionalLights) const;
+		void CollectPointLightsRecursive(SceneObject* object, std::vector<const PointLight*>& pointLights) const;
+		const AmbientLight* FindAmbientLightRecursive(const SceneObject* object) const;
 		const Skybox* FindSkyboxRecursive(const SceneObject* object) const;
 	};
 }

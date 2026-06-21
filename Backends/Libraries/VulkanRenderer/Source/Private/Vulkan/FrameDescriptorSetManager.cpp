@@ -56,6 +56,30 @@ namespace Nightbird::Vulkan
 			memcpy(m_PointLightMetaBuffers[frameIndex].GetMappedData(), &metaUBO, sizeof(metaUBO));
 		}
 	}
+
+	void FrameDescriptorSetManager::UpdateAmbientLight(uint32_t frameIndex, AmbientLightData& ambientLight)
+	{
+		memcpy(m_AmbientLightBuffers[frameIndex].GetMappedData(), &ambientLight, sizeof(ambientLight));
+	}
+
+	void FrameDescriptorSetManager::UpdateSkybox(uint32_t frameIndex, VkImageView imageView, VkSampler sampler)
+	{
+		VkDescriptorImageInfo imageInfo{};
+		imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+		imageInfo.imageView = imageView;
+		imageInfo.sampler = sampler;
+
+		VkWriteDescriptorSet write{};
+		write.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+		write.dstSet = m_DescriptorSets[frameIndex];
+		write.dstBinding = 6;
+		write.dstArrayElement = 0;
+		write.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+		write.descriptorCount = 1;
+		write.pImageInfo = &imageInfo;
+
+		vkUpdateDescriptorSets(m_Device->GetLogical(), 1, &write, 0, nullptr);
+	}
 	
 	void FrameDescriptorSetManager::CreateBuffers()
 	{
@@ -64,12 +88,14 @@ namespace Nightbird::Vulkan
 		VkDeviceSize directionalLightMetaBufferSize = sizeof(DirectionalLightMetaUBO) * MAX_DIRECTIONAL_LIGHTS;
 		VkDeviceSize pointLightBufferSize = sizeof(PointLightData) * MAX_POINT_LIGHTS;
 		VkDeviceSize pointLightMetaBufferSize = sizeof(PointLightMetaUBO) * MAX_POINT_LIGHTS;
+		VkDeviceSize ambientLightBufferSize = sizeof(AmbientLightData); // Only one ambient light allowed
 
 		m_CameraBuffers.reserve(Config::MAX_FRAMES_IN_FLIGHT);
 		m_DirectionalLightBuffers.reserve(Config::MAX_FRAMES_IN_FLIGHT);
 		m_DirectionalLightMetaBuffers.reserve(Config::MAX_FRAMES_IN_FLIGHT);
 		m_PointLightBuffers.reserve(Config::MAX_FRAMES_IN_FLIGHT);
 		m_PointLightMetaBuffers.reserve(Config::MAX_FRAMES_IN_FLIGHT);
+		m_AmbientLightBuffers.reserve(Config::MAX_FRAMES_IN_FLIGHT);
 
 		for (size_t i = 0; i < Config::MAX_FRAMES_IN_FLIGHT; i++)
 		{
@@ -80,6 +106,8 @@ namespace Nightbird::Vulkan
 
 			m_PointLightBuffers.emplace_back(m_Device, pointLightBufferSize, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
 			m_PointLightMetaBuffers.emplace_back(m_Device, pointLightMetaBufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+
+			m_AmbientLightBuffers.emplace_back(m_Device, ambientLightBufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
 		}
 	}
 
@@ -129,8 +157,13 @@ namespace Nightbird::Vulkan
 			pointLightsMetaInfo.buffer = m_PointLightMetaBuffers[i].Get();
 			pointLightsMetaInfo.offset = 0;
 			pointLightsMetaInfo.range = sizeof(PointLightMetaUBO);
-
-			std::array<VkWriteDescriptorSet, 5> descriptorWrites{};
+			
+			VkDescriptorBufferInfo ambientLightInfo{};
+			ambientLightInfo.buffer = m_AmbientLightBuffers[i].Get();
+			ambientLightInfo.offset = 0;
+			ambientLightInfo.range = sizeof(AmbientLightData);
+			
+			std::array<VkWriteDescriptorSet, 6> descriptorWrites{};
 			descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
 			descriptorWrites[0].dstSet = m_DescriptorSets[i];
 			descriptorWrites[0].dstBinding = 0;
@@ -170,7 +203,15 @@ namespace Nightbird::Vulkan
 			descriptorWrites[4].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
 			descriptorWrites[4].descriptorCount = 1;
 			descriptorWrites[4].pBufferInfo = &pointLightsMetaInfo;
-
+			
+			descriptorWrites[5].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+			descriptorWrites[5].dstSet = m_DescriptorSets[i];
+			descriptorWrites[5].dstBinding = 5;
+			descriptorWrites[5].dstArrayElement = 0;
+			descriptorWrites[5].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+			descriptorWrites[5].descriptorCount = 1;
+			descriptorWrites[5].pBufferInfo = &ambientLightInfo;
+			
 			vkUpdateDescriptorSets(logicalDevice, static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
 		}
 	}
