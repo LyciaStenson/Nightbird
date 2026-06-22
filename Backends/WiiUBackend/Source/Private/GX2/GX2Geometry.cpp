@@ -14,6 +14,7 @@ namespace Nightbird::GX2
 	{
 		CreatePositionBuffer(primitive);
 		CreateIndexBuffer(primitive);
+		CreateNormalBuffer(primitive);
 		CreateTexCoordBuffer(primitive);
 
 		m_IndexCount = static_cast<uint32_t>(primitive.GetIndices().size());
@@ -25,15 +26,22 @@ namespace Nightbird::GX2
 			GX2RDestroyBufferEx(&m_PositionBuffer, GX2R_RESOURCE_BIND_NONE);
 		if (m_IndexBuffer.buffer)
 			GX2RDestroyBufferEx(&m_IndexBuffer, GX2R_RESOURCE_BIND_NONE);
+		if (m_NormalBuffer.buffer)
+			GX2RDestroyBufferEx(&m_NormalBuffer, GX2R_RESOURCE_BIND_NONE);
 		if (m_TexCoordBuffer.buffer)
 			GX2RDestroyBufferEx(&m_TexCoordBuffer, GX2R_RESOURCE_BIND_NONE);
 	}
 
 	Geometry::Geometry(Geometry&& other) noexcept
-	: m_PositionBuffer(other.m_PositionBuffer), m_IndexBuffer(other.m_IndexBuffer), m_TexCoordBuffer(other.m_TexCoordBuffer), m_IndexCount(other.m_IndexCount)
+		: m_PositionBuffer(other.m_PositionBuffer),
+		  m_IndexBuffer(other.m_IndexBuffer),
+		  m_NormalBuffer(other.m_NormalBuffer),
+		  m_TexCoordBuffer(other.m_TexCoordBuffer),
+		  m_IndexCount(other.m_IndexCount)
 	{
 		other.m_PositionBuffer = {};
 		other.m_IndexBuffer = {};
+		other.m_NormalBuffer = {};
 		other.m_TexCoordBuffer = {};
 		other.m_IndexCount = 0;
 	}
@@ -46,16 +54,20 @@ namespace Nightbird::GX2
 				GX2RDestroyBufferEx(&m_PositionBuffer, GX2R_RESOURCE_BIND_NONE);
 			if (m_IndexBuffer.buffer)
 				GX2RDestroyBufferEx(&m_IndexBuffer, GX2R_RESOURCE_BIND_NONE);
+			if (m_NormalBuffer.buffer)
+				GX2RDestroyBufferEx(&m_NormalBuffer, GX2R_RESOURCE_BIND_NONE);
 			if (m_TexCoordBuffer.buffer)
 				GX2RDestroyBufferEx(&m_TexCoordBuffer, GX2R_RESOURCE_BIND_NONE);
 
 			m_PositionBuffer = other.m_PositionBuffer;
 			m_IndexBuffer = other.m_IndexBuffer;
+			m_NormalBuffer = other.m_NormalBuffer;
 			m_TexCoordBuffer = other.m_TexCoordBuffer;
 			m_IndexCount = other.m_IndexCount;
 
 			other.m_PositionBuffer = {};
 			other.m_IndexBuffer = {};
+			other.m_NormalBuffer = {};
 			other.m_TexCoordBuffer = {};
 			other.m_IndexCount = 0;
 		}
@@ -70,6 +82,11 @@ namespace Nightbird::GX2
 	GX2RBuffer& Geometry::GetIndexBuffer()
 	{
 		return m_IndexBuffer;
+	}
+
+	GX2RBuffer& Geometry::GetNormalBuffer()
+	{
+		return m_NormalBuffer;
 	}
 
 	GX2RBuffer& Geometry::GetTexCoordBuffer()
@@ -114,9 +131,9 @@ namespace Nightbird::GX2
 		const auto& indices = primitive.GetIndices();
 
 		m_IndexBuffer.flags = GX2R_RESOURCE_BIND_INDEX_BUFFER |
-								 GX2R_RESOURCE_USAGE_CPU_READ |
-								 GX2R_RESOURCE_USAGE_CPU_WRITE |
-								 GX2R_RESOURCE_USAGE_GPU_READ;
+							  GX2R_RESOURCE_USAGE_CPU_READ |
+							  GX2R_RESOURCE_USAGE_CPU_WRITE |
+							  GX2R_RESOURCE_USAGE_GPU_READ;
 		m_IndexBuffer.elemSize = sizeof(uint16_t);
 		m_IndexBuffer.elemCount = static_cast<uint32_t>(indices.size());
 		GX2RCreateBuffer(&m_IndexBuffer);
@@ -124,6 +141,32 @@ namespace Nightbird::GX2
 		void* buffer = GX2RLockBufferEx(&m_IndexBuffer, GX2R_RESOURCE_BIND_NONE);
 		memcpy(buffer, indices.data(), m_IndexBuffer.elemSize * m_IndexBuffer.elemCount);
 		GX2RUnlockBufferEx(&m_IndexBuffer, GX2R_RESOURCE_BIND_NONE);
+	}
+
+	void Geometry::CreateNormalBuffer(const Core::MeshPrimitive& primitive)
+	{
+		const auto& vertices = primitive.GetVertices();
+
+		std::vector<float> normals;
+		normals.reserve(vertices.size() * 3);
+		for (const auto& vertex : vertices)
+		{
+			normals.push_back(vertex.normal.x);
+			normals.push_back(vertex.normal.y);
+			normals.push_back(vertex.normal.z);
+		}
+
+		m_NormalBuffer.flags = GX2R_RESOURCE_BIND_VERTEX_BUFFER |
+							   GX2R_RESOURCE_USAGE_CPU_READ |
+							   GX2R_RESOURCE_USAGE_CPU_WRITE |
+							   GX2R_RESOURCE_USAGE_GPU_READ;
+		m_NormalBuffer.elemSize = 3 * sizeof(float);
+		m_NormalBuffer.elemCount = static_cast<uint32_t>(vertices.size());
+		GX2RCreateBuffer(&m_NormalBuffer);
+
+		void* buffer = GX2RLockBufferEx(&m_NormalBuffer, GX2R_RESOURCE_BIND_NONE);
+		memcpy(buffer, normals.data(), m_NormalBuffer.elemSize * m_NormalBuffer.elemCount);
+		GX2RUnlockBufferEx(&m_NormalBuffer, GX2R_RESOURCE_BIND_NONE);
 	}
 
 	void Geometry::CreateTexCoordBuffer(const Core::MeshPrimitive& primitive)
