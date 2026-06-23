@@ -231,20 +231,23 @@ namespace Nightbird::GX2
 			UploadVec4(m_AmbientLightData, glm::vec4(0.0f));
 		GX2Invalidate(GX2_INVALIDATE_MODE_CPU | GX2_INVALIDATE_MODE_UNIFORM_BLOCK, m_AmbientLightData, 4 * sizeof(float));
 		GX2SetPixelUniformBlock(m_AmbientLightPixelBlockLoc, 4 * sizeof(float), m_AmbientLightData);
-
+		
 		uint32_t renderableCount = static_cast<uint32_t>(m_Renderables.size());
-		float* modelDataPool = (float*)MEMAllocFromDefaultHeapEx(32 * sizeof(float) * renderableCount, GX2_UNIFORM_BLOCK_ALIGNMENT);
+
+		static constexpr uint32_t MODEL_BLOCK_STRIDE = 64;
+
+		float* modelDataPool = (float*)MEMAllocFromDefaultHeapEx(MODEL_BLOCK_STRIDE * sizeof(float) * renderableCount, GX2_UNIFORM_BLOCK_ALIGNMENT);
 
 		for (uint32_t i = 0; i < renderableCount; ++i)
 		{
-			float* modelData = modelDataPool + 32 * i;
+			float* modelData = modelDataPool + MODEL_BLOCK_STRIDE * i;
 			UploadMatrix(modelData, m_Renderables[i].transform);
 
 			glm::mat4 normalMatrix = glm::transpose(glm::inverse(m_Renderables[i].transform));
 			UploadMatrix(modelData + 16, normalMatrix);
 
-			GX2Invalidate(GX2_INVALIDATE_MODE_CPU | GX2_INVALIDATE_MODE_UNIFORM_BLOCK, modelData, 32 * sizeof(float));
-			GX2SetVertexUniformBlock(m_ModelVertexBlockLoc, 32 * sizeof(float), modelData);
+			GX2Invalidate(GX2_INVALIDATE_MODE_CPU | GX2_INVALIDATE_MODE_UNIFORM_BLOCK, modelData, MODEL_BLOCK_STRIDE * sizeof(float));
+			GX2SetVertexUniformBlock(m_ModelVertexBlockLoc, MODEL_BLOCK_STRIDE * sizeof(float), modelData);
 
 			Geometry& geometry = GetOrCreateGeometry(m_Renderables[i].primitive);
 			Material& material = GetOrCreateMaterial(m_Renderables[i].primitive->GetMaterial().get());
@@ -265,7 +268,7 @@ namespace Nightbird::GX2
 
 	Core::RenderSurface& Renderer::GetDefaultSurface()
 	{
-		return *m_SurfaceTV;
+		return *m_SurfaceDRC;
 	}
 
 	std::unique_ptr<Core::RenderSurface> Renderer::CreateOffscreenSurface(uint32_t width, uint32_t height, Core::RenderSurfaceFormat format)
