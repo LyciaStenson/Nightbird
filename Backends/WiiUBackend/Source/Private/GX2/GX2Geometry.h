@@ -25,6 +25,7 @@ namespace Nightbird::GX2
 
 		GX2RBuffer& GetPositionBuffer();
 		GX2RBuffer& GetIndexBuffer();
+		GX2RBuffer& GetNormalBuffer();
 		GX2RBuffer& GetTexCoordBuffer();
 
 		uint32_t GetIndexCount() const;
@@ -32,10 +33,12 @@ namespace Nightbird::GX2
 	private:
 		void CreatePositionBuffer(const Core::MeshPrimitive& primitive);
 		void CreateIndexBuffer(const Core::MeshPrimitive& primitive);
+		void CreateNormalBuffer(const Core::MeshPrimitive& primitive);
 		void CreateTexCoordBuffer(const Core::MeshPrimitive& primitive);
 
 		GX2RBuffer m_PositionBuffer = {};
 		GX2RBuffer m_IndexBuffer = {};
+		GX2RBuffer m_NormalBuffer = {};
 		GX2RBuffer m_TexCoordBuffer = {};
 
 		uint32_t m_IndexCount = 0;

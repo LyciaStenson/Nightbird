@@ -58,23 +58,52 @@ namespace Nightbird::GX2
 		GX2Invalidate(GX2_INVALIDATE_MODE_CPU_SHADER, m_ShaderGroup.pixelShader->program, m_ShaderGroup.pixelShader->size);
 
 		WHBGfxInitShaderAttribute(&m_ShaderGroup, "aPosition", 0, 0, GX2_ATTRIB_FORMAT_FLOAT_32_32_32_32);
-		WHBGfxInitShaderAttribute(&m_ShaderGroup, "aBaseColorTexCoord", 1, 0, GX2_ATTRIB_FORMAT_FLOAT_32_32);
+		WHBGfxInitShaderAttribute(&m_ShaderGroup, "aNormal", 1, 0, GX2_ATTRIB_FORMAT_FLOAT_32_32_32);
+		WHBGfxInitShaderAttribute(&m_ShaderGroup, "aBaseColorTexCoord", 2, 0, GX2_ATTRIB_FORMAT_FLOAT_32_32);
 		WHBGfxInitFetchShader(&m_ShaderGroup);
 
-		for (uint32_t i = 0; i < m_ShaderGroup.vertexShader->uniformBlockCount; i++)
+		// Find vertex uniform block locations
+		for (uint32_t i = 0; i < m_ShaderGroup.vertexShader->uniformBlockCount; ++i)
 		{
 			auto& b = m_ShaderGroup.vertexShader->uniformBlocks[i];
 			if (std::string(b.name) == "CameraUBO")
-				m_CameraBlockLocation = b.offset;
+				m_CameraVertexBlockLoc = b.offset;
 			else if (std::string(b.name) == "ModelUBO")
-				m_ModelBlockLocation = b.offset;
+				m_ModelVertexBlockLoc = b.offset;
 		}
+
+		// Find pixel uniform block locations
+		for (uint32_t i = 0; i < m_ShaderGroup.pixelShader->uniformBlockCount; ++i)
+		{
+			auto& b = m_ShaderGroup.pixelShader->uniformBlocks[i];
+			if (std::string(b.name) == "CameraUBO")
+				m_CameraPixelBlockLoc = b.offset;
+			else if (std::string(b.name) == "DirectionalLightUBO")
+				m_DirectionalLightPixelBlockLoc = b.offset;
+			else if (std::string(b.name) == "PointLightUBO")
+				m_PointLightPixelBlockLoc = b.offset;
+			else if (std::string(b.name) == "AmbientLightUBO")
+				m_AmbientLightPixelBlockLoc = b.offset;
+		}
+
+		Core::Log::Info("m_CameraVertexBlockLoc: " + std::to_string(m_CameraVertexBlockLoc));
+		Core::Log::Info("m_ModelVertexBlockLoc: " + std::to_string(m_ModelVertexBlockLoc));
+		Core::Log::Info("m_CameraPixelBlockLoc: " + std::to_string(m_CameraPixelBlockLoc));
+		Core::Log::Info("m_DirectionalLightPixelBlockLoc: " + std::to_string(m_DirectionalLightPixelBlockLoc));
+		Core::Log::Info("m_PointLightPixelBlockLoc: " + std::to_string(m_PointLightPixelBlockLoc));
+		Core::Log::Info("m_AmbientLightPixelBlockLoc: " + std::to_string(m_AmbientLightPixelBlockLoc));
 		
 		// CameraUBO: view(16) + projection(16) + position(4) = 36 floats
 		m_CameraData = (float*)MEMAllocFromDefaultHeapEx(36 * sizeof(float), GX2_UNIFORM_BLOCK_ALIGNMENT);
+		
+		// DirectionalLightUBO: 8 lights * (direction(4) + colorIntensity(4) + count(1 padded to 4) = 68 floats
+		m_DirectionalLightData = (float*)MEMAllocFromDefaultHeapEx(68 * sizeof(float), GX2_UNIFORM_BLOCK_ALIGNMENT);
 
-		// ModelUBO: model(16) = 16 floats
-		//m_ModelData = (float*)MEMAllocFromDefaultHeapEx(16 * sizeof(float), GX2_UNIFORM_BLOCK_ALIGNMENT);
+		// PointLightUBO: 64 lights * (positionRadius(4) + colorIntensity(4)) + count(1 padded to 4) = 516 floats
+		m_PointLightData = (float*)MEMAllocFromDefaultHeapEx(516 * sizeof(float), GX2_UNIFORM_BLOCK_ALIGNMENT);
+
+		// AmbientLightUBO: colorIntensity(4) = 4 floats
+		m_AmbientLightData = (float*)MEMAllocFromDefaultHeapEx(4 * sizeof(float), GX2_UNIFORM_BLOCK_ALIGNMENT);
 
 		std::vector<uint8_t> pixels = { 255, 255, 255, 255 };
 		m_DefaultTexture = std::make_shared<Core::Texture>(1, 1, Core::TextureFormat::RGBA8, pixels);
@@ -83,13 +112,20 @@ namespace Nightbird::GX2
 		m_SurfaceDRC = std::make_unique<RenderSurfaceDRC>();
 	}
 
+	void Renderer::InitializeSurface(Core::RenderSurface& coreSurface)
+	{
+
+	}
+
 	void Renderer::Shutdown()
 	{
 		GX2DrawDone();
-
+		
 		MEMFreeToDefaultHeap(m_CameraData);
-		//MEMFreeToDefaultHeap(m_ModelData);
-
+		MEMFreeToDefaultHeap(m_DirectionalLightData);
+		MEMFreeToDefaultHeap(m_PointLightData);
+		MEMFreeToDefaultHeap(m_AmbientLightData);
+		
 		m_MaterialCache.clear();
 		m_GeometryCache.clear();
 
@@ -101,6 +137,9 @@ namespace Nightbird::GX2
 	{
 		m_ActiveCamera = &camera;
 		m_Renderables = scene.CollectRenderables();
+		m_DirectionalLights = scene.CollectDirectionalLights();
+		m_PointLights = scene.CollectPointLights();
+		m_AmbientLight = scene.FindAmbientLight();
 	}
 
 	bool Renderer::BeginFrame(Core::RenderSurface& surface)
@@ -141,24 +180,74 @@ namespace Nightbird::GX2
 			(GX2ChannelMask)0
 		);
 
+		// Upload camera to vertex shader
 		glm::vec4 cameraPos = glm::vec4(glm::vec3(m_ActiveCamera->GetWorldMatrix()[3]), 1.0f);
 		UploadMatrix(m_CameraData, m_ActiveCamera->GetViewMatrix());
 		UploadMatrix(m_CameraData + 16, m_ActiveCamera->GetProjectionMatrix(static_cast<float>(surface.GetWidth()), static_cast<float>(surface.GetHeight())));
 		UploadVec4(m_CameraData + 32, cameraPos);
-
 		GX2Invalidate(GX2_INVALIDATE_MODE_CPU | GX2_INVALIDATE_MODE_UNIFORM_BLOCK, m_CameraData, 36 * sizeof(float));
-		GX2SetVertexUniformBlock(m_CameraBlockLocation, 36 * sizeof(float), m_CameraData);
+		GX2SetVertexUniformBlock(m_CameraVertexBlockLoc, 36 * sizeof(float), m_CameraData);
+		
+		// Upload camera to pixel shader
+		GX2Invalidate(GX2_INVALIDATE_MODE_CPU | GX2_INVALIDATE_MODE_UNIFORM_BLOCK, m_CameraData, 36 * sizeof(float));
+		GX2SetPixelUniformBlock(m_CameraPixelBlockLoc, 36 * sizeof(float), m_CameraData);
+
+		// Upload directional lights to pixel shader
+		uint32_t directionalLightCount = static_cast<uint32_t>(std::min(m_DirectionalLights.size(), size_t(8)));
+		float* directionalLightPtr = m_DirectionalLightData;
+		for (uint32_t i = 0; i < directionalLightCount; ++i)
+		{
+			const Core::DirectionalLight* light = m_DirectionalLights[i];
+			glm::mat4 worldMatrix = light->GetWorldMatrix();
+			glm::vec3 forward = glm::normalize(glm::vec3(worldMatrix * glm::vec4(0.0f, 0.0f, -1.0f, 0.0f)));
+			UploadVec4(directionalLightPtr + i * 8, glm::vec4(forward, 0.0f));
+			UploadVec4(directionalLightPtr + i * 8 + 4, glm::vec4(light->m_Color, light->m_Intensity));
+		}
+		// Upload count padded to vec4
+		uint32_t directionalLightCountSwapped = __builtin_bswap32(directionalLightCount);
+		memcpy(m_DirectionalLightData + 64, &directionalLightCountSwapped, sizeof(uint32_t));
+		GX2Invalidate(GX2_INVALIDATE_MODE_CPU | GX2_INVALIDATE_MODE_UNIFORM_BLOCK, m_DirectionalLightData, 68 * sizeof(float));
+		GX2SetPixelUniformBlock(m_DirectionalLightPixelBlockLoc, 68 * sizeof(float), m_DirectionalLightData);
+
+		// Upload point lights to pixel shader
+		uint32_t pointLightCount = static_cast<uint32_t>(std::min(m_PointLights.size(), size_t(64)));
+		for (uint32_t i = 0; i < pointLightCount; ++i)
+		{
+			const Core::PointLight* light = m_PointLights[i];
+			glm::vec3 worldPos = glm::vec3(light->GetWorldMatrix()[3]);
+			UploadVec4(m_PointLightData + i * 8, glm::vec4(worldPos, light->m_Radius));
+			UploadVec4(m_PointLightData + i * 8 + 4, glm::vec4(light->m_Color, light->m_Intensity));
+		}
+		// Upload count padded to vec4
+		uint32_t pointCountSwapped = __builtin_bswap32(pointLightCount);
+		memcpy(m_PointLightData + 512, &pointCountSwapped, sizeof(uint32_t));
+		GX2Invalidate(GX2_INVALIDATE_MODE_CPU | GX2_INVALIDATE_MODE_UNIFORM_BLOCK, m_PointLightData, 516 * sizeof(float));
+		GX2SetPixelUniformBlock(m_PointLightPixelBlockLoc, 516 * sizeof(float), m_PointLightData);
+
+		// Upload ambient light to pixel shader
+		if (m_AmbientLight)
+			UploadVec4(m_AmbientLightData, glm::vec4(m_AmbientLight->m_Color, m_AmbientLight->m_Intensity));
+		else
+			UploadVec4(m_AmbientLightData, glm::vec4(0.0f));
+		GX2Invalidate(GX2_INVALIDATE_MODE_CPU | GX2_INVALIDATE_MODE_UNIFORM_BLOCK, m_AmbientLightData, 4 * sizeof(float));
+		GX2SetPixelUniformBlock(m_AmbientLightPixelBlockLoc, 4 * sizeof(float), m_AmbientLightData);
 		
 		uint32_t renderableCount = static_cast<uint32_t>(m_Renderables.size());
-		float* modelDataPool = (float*)MEMAllocFromDefaultHeapEx(16 * sizeof(float) * renderableCount, GX2_UNIFORM_BLOCK_ALIGNMENT);
+
+		static constexpr uint32_t MODEL_BLOCK_STRIDE = 64;
+
+		float* modelDataPool = (float*)MEMAllocFromDefaultHeapEx(MODEL_BLOCK_STRIDE * sizeof(float) * renderableCount, GX2_UNIFORM_BLOCK_ALIGNMENT);
 
 		for (uint32_t i = 0; i < renderableCount; ++i)
 		{
-			float* modelData = modelDataPool + 16 * i;
+			float* modelData = modelDataPool + MODEL_BLOCK_STRIDE * i;
 			UploadMatrix(modelData, m_Renderables[i].transform);
 
-			GX2Invalidate(GX2_INVALIDATE_MODE_CPU | GX2_INVALIDATE_MODE_UNIFORM_BLOCK, modelData, 16 * sizeof(float));
-			GX2SetVertexUniformBlock(m_ModelBlockLocation, 16 * sizeof(float), modelData);
+			glm::mat4 normalMatrix = glm::transpose(glm::inverse(m_Renderables[i].transform));
+			UploadMatrix(modelData + 16, normalMatrix);
+
+			GX2Invalidate(GX2_INVALIDATE_MODE_CPU | GX2_INVALIDATE_MODE_UNIFORM_BLOCK, modelData, MODEL_BLOCK_STRIDE * sizeof(float));
+			GX2SetVertexUniformBlock(m_ModelVertexBlockLoc, MODEL_BLOCK_STRIDE * sizeof(float), modelData);
 
 			Geometry& geometry = GetOrCreateGeometry(m_Renderables[i].primitive);
 			Material& material = GetOrCreateMaterial(m_Renderables[i].primitive->GetMaterial().get());
@@ -167,18 +256,19 @@ namespace Nightbird::GX2
 			GX2SetPixelSampler(&material.GetBaseColorTexture().GetSampler(), 3);
 
 			GX2RSetAttributeBuffer(&geometry.GetPositionBuffer(), 0, geometry.GetPositionBuffer().elemSize, 0);
-			GX2RSetAttributeBuffer(&geometry.GetTexCoordBuffer(), 1, geometry.GetTexCoordBuffer().elemSize, 0);
+			GX2RSetAttributeBuffer(&geometry.GetNormalBuffer(), 1, geometry.GetNormalBuffer().elemSize, 0);
+			GX2RSetAttributeBuffer(&geometry.GetTexCoordBuffer(), 2, geometry.GetTexCoordBuffer().elemSize, 0);
+
 			GX2DrawIndexedEx(GX2_PRIMITIVE_MODE_TRIANGLES, geometry.GetIndexCount(), GX2_INDEX_TYPE_U16, geometry.GetIndexBuffer().buffer, 0, 1);
 		}
-
+		
 		MEMFreeToDefaultHeap(modelDataPool);
-
 		surface.Finish();
 	}
 
 	Core::RenderSurface& Renderer::GetDefaultSurface()
 	{
-		return *m_SurfaceTV;
+		return *m_SurfaceDRC;
 	}
 
 	std::unique_ptr<Core::RenderSurface> Renderer::CreateOffscreenSurface(uint32_t width, uint32_t height, Core::RenderSurfaceFormat format)

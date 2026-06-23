@@ -3,6 +3,9 @@
 #include "Core/Renderer.h"
 
 #include "Core/Renderable.h"
+#include "Core/DirectionalLight.h"
+#include "Core/PointLight.h"
+#include "Core/AmbientLight.h"
 
 #include "GX2/GX2Geometry.h"
 #include "GX2/GX2Material.h"
@@ -34,6 +37,7 @@ namespace Nightbird::GX2
 	{
 	public:
 		void Initialize() override;
+		void InitializeSurface(Core::RenderSurface& surface) override;
 		void Shutdown() override;
 		Core::RenderSurface& GetDefaultSurface() override;
 		std::unique_ptr<Core::RenderSurface> CreateOffscreenSurface(uint32_t width, uint32_t height, Core::RenderSurfaceFormat format) override;
@@ -44,7 +48,12 @@ namespace Nightbird::GX2
 
 	private:
 		const Core::Camera* m_ActiveCamera = nullptr;
+
 		std::vector<Core::Renderable> m_Renderables;
+		std::vector<const Core::DirectionalLight*> m_DirectionalLights;
+		std::vector<const Core::PointLight*> m_PointLights;
+		const Core::AmbientLight* m_AmbientLight = nullptr;
+
 		std::unordered_map<const Core::MeshPrimitive*, Geometry> m_GeometryCache;
 		std::unordered_map<const Core::Material*, Material> m_MaterialCache;
 
@@ -55,11 +64,18 @@ namespace Nightbird::GX2
 		
 		WHBGfxShaderGroup m_ShaderGroup = {};
 
-		uint32_t m_CameraBlockLocation = 0;
-		uint32_t m_ModelBlockLocation = 0;
+		uint32_t m_CameraVertexBlockLoc = 0;
+		uint32_t m_ModelVertexBlockLoc = 0;
+
+		uint32_t m_CameraPixelBlockLoc = 0;
+		uint32_t m_DirectionalLightPixelBlockLoc = 0;
+		uint32_t m_PointLightPixelBlockLoc = 0;
+		uint32_t m_AmbientLightPixelBlockLoc = 0;
 
 		float* m_CameraData = nullptr;
-		//float* m_ModelData = nullptr;
+		float* m_DirectionalLightData = nullptr;
+		float* m_PointLightData = nullptr;
+		float* m_AmbientLightData = nullptr;
 
 		Geometry& GetOrCreateGeometry(const Core::MeshPrimitive* primitive);
 		Material& GetOrCreateMaterial(const Core::Material* material);

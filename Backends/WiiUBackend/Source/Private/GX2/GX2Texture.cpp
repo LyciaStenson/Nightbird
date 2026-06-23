@@ -19,7 +19,7 @@ namespace Nightbird::GX2
 		m_Texture.surface.height = texture.GetHeight();
 		m_Texture.surface.depth = 1;
 		m_Texture.surface.mipLevels = 1;
-		m_Texture.surface.format = GX2_SURFACE_FORMAT_UNORM_R8_G8_B8_A8;
+		m_Texture.surface.format = GX2_SURFACE_FORMAT_SRGB_R8_G8_B8_A8;
 		m_Texture.surface.aa = GX2_AA_MODE1X;
 		m_Texture.surface.use = GX2_SURFACE_USE_TEXTURE;
 		m_Texture.surface.tileMode = GX2_TILE_MODE_LINEAR_ALIGNED;
