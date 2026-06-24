@@ -11,12 +11,12 @@ namespace Nightbird::GX2
 
 	uint32_t RenderSurfaceDRC::GetWidth() const
 	{
-		return 854;
+		return WHBGfxGetDRCColourBuffer()->surface.width;
 	}
 
 	uint32_t RenderSurfaceDRC::GetHeight() const
 	{
-		return 480;
+		return WHBGfxGetDRCColourBuffer()->surface.height;
 	}
 
 	void RenderSurfaceDRC::Resize(uint32_t width, uint32_t height)

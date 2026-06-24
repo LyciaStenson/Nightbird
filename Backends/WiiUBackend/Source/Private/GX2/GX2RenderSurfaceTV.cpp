@@ -11,12 +11,12 @@ namespace Nightbird::GX2
 
 	uint32_t RenderSurfaceTV::GetWidth() const
 	{
-		return 1920;
+		return WHBGfxGetTVColourBuffer()->surface.width;
 	}
 
 	uint32_t RenderSurfaceTV::GetHeight() const
 	{
-		return 1080;
+		return WHBGfxGetTVColourBuffer()->surface.height;
 	}
 	
 	void RenderSurfaceTV::Resize(uint32_t width, uint32_t height)
