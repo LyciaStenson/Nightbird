@@ -85,13 +85,6 @@ namespace Nightbird::GX2
 			else if (std::string(b.name) == "AmbientLightUBO")
 				m_AmbientLightPixelBlockLoc = b.offset;
 		}
-
-		Core::Log::Info("m_CameraVertexBlockLoc: " + std::to_string(m_CameraVertexBlockLoc));
-		Core::Log::Info("m_ModelVertexBlockLoc: " + std::to_string(m_ModelVertexBlockLoc));
-		Core::Log::Info("m_CameraPixelBlockLoc: " + std::to_string(m_CameraPixelBlockLoc));
-		Core::Log::Info("m_DirectionalLightPixelBlockLoc: " + std::to_string(m_DirectionalLightPixelBlockLoc));
-		Core::Log::Info("m_PointLightPixelBlockLoc: " + std::to_string(m_PointLightPixelBlockLoc));
-		Core::Log::Info("m_AmbientLightPixelBlockLoc: " + std::to_string(m_AmbientLightPixelBlockLoc));
 		
 		// CameraUBO: view(16) + projection(16) + position(4) = 36 floats
 		m_CameraData = (float*)MEMAllocFromDefaultHeapEx(36 * sizeof(float), GX2_UNIFORM_BLOCK_ALIGNMENT);

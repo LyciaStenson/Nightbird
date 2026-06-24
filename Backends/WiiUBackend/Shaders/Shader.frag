@@ -19,15 +19,10 @@ struct DirectionalLight
 	vec4 colorIntensity;
 };
 
-struct DirectionalLightData
-{
-	DirectionalLight lights[8];
-	uint count;
-};
-
 layout(binding = 4, std140) uniform DirectionalLightUBO
 {
-	DirectionalLightData directionalLights;
+	DirectionalLight directionalLights[4];
+	uint directionalLightCount;
 };
 
 struct PointLight
@@ -36,15 +31,10 @@ struct PointLight
 	vec4 colorIntensity;
 };
 
-struct PointLightData
-{
-	PointLight lights[64];
-	uint count;
-};
-
 layout(binding = 5, std140) uniform PointLightUBO
 {
-	PointLightData pointLights;
+	PointLight pointLights[8];
+	uint pointLightCount;
 };
 
 struct AmbientLightData
@@ -70,9 +60,9 @@ void main()
 	vec3 viewDir = normalize(cameraPos.xyz - fragWorldPos);
 
 	// Directional lights
-	for (uint i = 0; i < directionalLights.count || i < 8; ++i)
+	for (uint i = 0; i < 4; ++i)
 	{
-		DirectionalLight light = directionalLights.lights[i];
+		DirectionalLight light = directionalLights[i];
 		vec3 lightDir = normalize(-light.direction.xyz);
 		vec3 lightColor = light.colorIntensity.rgb;
 		float intensity = light.colorIntensity.a;
@@ -88,9 +78,9 @@ void main()
 	}
 	
 	// Point lights
-	for (uint i = 0; i < pointLights.count || i < 64; ++i)
+	for (uint i = 0; i < 8; ++i)
 	{
-		PointLight light = pointLights.lights[i];
+		PointLight light = pointLights[i];
 		vec3 lightPos = light.positionRadius.xyz;
 		float radius = light.positionRadius.w;
 		vec3 lightColor = light.colorIntensity.rgb;
