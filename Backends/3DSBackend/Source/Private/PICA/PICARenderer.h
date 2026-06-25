@@ -3,6 +3,9 @@
 #include "Core/Renderer.h"
 
 #include "Core/Renderable.h"
+#include "Core/DirectionalLight.h"
+#include "Core/PointLight.h"
+#include "Core/AmbientLight.h"
 
 #include "PICA/PICAGeometry.h"
 #include "PICA/PICAMaterial.h"

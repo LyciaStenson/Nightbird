@@ -5,9 +5,6 @@
 #include "Core/MeshPrimitive.h"
 #include "Core/Material.h"
 #include "Core/Texture.h"
-#include "Core/DirectionalLight.h"
-#include "Core/PointLight.h"
-#include "Core/AmbientLight.h"
 #include "Core/Log.h"
 
 #include <glm/glm.hpp>
@@ -37,7 +34,7 @@ namespace Nightbird::PICA
 		AttrInfo_Init(attrInfo);
 		AttrInfo_AddLoader(attrInfo, 0, GPU_FLOAT, 3); // v0 position
 		AttrInfo_AddLoader(attrInfo, 1, GPU_FLOAT, 3); // v1 normal
-		AttrInfo_AddLoader(attrInfo, 3, GPU_FLOAT, 2); // v2 texcoord
+		AttrInfo_AddLoader(attrInfo, 2, GPU_FLOAT, 2); // v2 texcoord
 
 		C3D_TexEnv* env = C3D_GetTexEnv(0);
 		C3D_TexEnvInit(env);
@@ -67,9 +64,7 @@ namespace Nightbird::PICA
 
 		LightLut_Phong(&m_LutPhong, 30);
 		C3D_LightEnvLut(&m_LightEnv, GPU_LUT_D0, GPU_LUTINPUT_LN, false, &m_LutPhong);
-
-		//C3D_TexEnvColor(env, 0xFFFFFF);
-
+		
 		uint8_t pixels[8*8*4]; // 8x8 RGBA
 		for (int i = 0; i < 8*8*4; i++)
 			pixels[i] = 255;
