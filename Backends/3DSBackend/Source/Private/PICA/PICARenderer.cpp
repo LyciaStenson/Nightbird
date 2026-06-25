@@ -5,6 +5,9 @@
 #include "Core/MeshPrimitive.h"
 #include "Core/Material.h"
 #include "Core/Texture.h"
+#include "Core/DirectionalLight.h"
+#include "Core/PointLight.h"
+#include "Core/AmbientLight.h"
 #include "Core/Log.h"
 
 #include <glm/glm.hpp>
@@ -33,14 +36,39 @@ namespace Nightbird::PICA
 		C3D_AttrInfo* attrInfo = C3D_GetAttrInfo();
 		AttrInfo_Init(attrInfo);
 		AttrInfo_AddLoader(attrInfo, 0, GPU_FLOAT, 3); // v0 position
-		AttrInfo_AddLoader(attrInfo, 1, GPU_FLOAT, 2); // v1 texcoord
+		AttrInfo_AddLoader(attrInfo, 1, GPU_FLOAT, 3); // v1 normal
+		AttrInfo_AddLoader(attrInfo, 3, GPU_FLOAT, 2); // v2 texcoord
 
 		C3D_TexEnv* env = C3D_GetTexEnv(0);
 		C3D_TexEnvInit(env);
-		C3D_TexEnvSrc(env, C3D_Both, GPU_TEXTURE0, GPU_PRIMARY_COLOR, GPU_PRIMARY_COLOR);
-		C3D_TexEnvFunc(env, C3D_Both, GPU_MODULATE); // Multiply vertex and texture color
+		C3D_TexEnvSrc(env, C3D_RGB, GPU_TEXTURE0, GPU_FRAGMENT_PRIMARY_COLOR, (GPU_TEVSRC)0);
+		C3D_TexEnvFunc(env, C3D_RGB, GPU_MODULATE); // Multiply vertex and texture color
 
-		C3D_TexEnvColor(env, 0xFFFFFF);
+		C3D_TexEnv* env1 = C3D_GetTexEnv(1);
+		C3D_TexEnvInit(env1);
+		C3D_TexEnvSrc(env1, C3D_RGB, GPU_PREVIOUS, GPU_FRAGMENT_SECONDARY_COLOR, (GPU_TEVSRC)0);
+		C3D_TexEnvFunc(env1, C3D_RGB, GPU_ADD);
+
+		C3D_TexEnvSrc(env, C3D_Alpha, GPU_TEXTURE0, (GPU_TEVSRC)0, (GPU_TEVSRC)0);
+		C3D_TexEnvFunc(env, C3D_Alpha, GPU_REPLACE);
+		
+		static const C3D_Material material =
+		{
+			{ 0.0f, 0.0f, 0.0f }, // Ambient
+			{ 0.8f, 0.8f, 0.8f }, // Diffuse
+			{ 0.5f, 0.5f, 0.5f }, // Specular0
+			{ 0.0f, 0.0f, 0.0f }, // Specular1
+			{ 0.0f, 0.0f, 0.0f }, // Emission
+		};
+
+		C3D_LightEnvInit(&m_LightEnv);
+		C3D_LightEnvBind(&m_LightEnv);
+		C3D_LightEnvMaterial(&m_LightEnv, &material);
+
+		LightLut_Phong(&m_LutPhong, 30);
+		C3D_LightEnvLut(&m_LightEnv, GPU_LUT_D0, GPU_LUTINPUT_LN, false, &m_LutPhong);
+
+		//C3D_TexEnvColor(env, 0xFFFFFF);
 
 		uint8_t pixels[8*8*4]; // 8x8 RGBA
 		for (int i = 0; i < 8*8*4; i++)
@@ -48,6 +76,11 @@ namespace Nightbird::PICA
 
 		m_DefaultTexture = std::make_shared<Texture>();
 		m_DefaultTexture->InitFromPixels(8, 8, pixels);
+	}
+
+	void Renderer::InitializeSurface(Core::RenderSurface& coreSurface)
+	{
+
 	}
 
 	void Renderer::Shutdown()
@@ -67,6 +100,9 @@ namespace Nightbird::PICA
 	{
 		m_ActiveCamera = &camera;
 		m_Renderables = scene.CollectRenderables();
+		m_DirectionalLights = scene.CollectDirectionalLights();
+		m_PointLights = scene.CollectPointLights();
+		m_AmbientLight = scene.FindAmbientLight();
 	}
 
 	bool Renderer::BeginFrame(Core::RenderSurface& surface)
@@ -87,6 +123,62 @@ namespace Nightbird::PICA
 		if (!m_ActiveCamera)
 			return;
 
+		C3D_LightEnvInit(&m_LightEnv);
+		C3D_LightEnvBind(&m_LightEnv);
+
+		C3D_Material material =
+		{
+			{ 0.0f, 0.0f, 0.0f }, // Ambient
+			{ 0.8f, 0.8f, 0.8f }, // Diffuse
+			{ 0.5f, 0.5f, 0.5f }, // Specular0
+			{ 0.0f, 0.0f, 0.0f }, // Specular1
+			{ 0.0f, 0.0f, 0.0f }, // Emission
+		};
+		if (m_AmbientLight)
+		{
+			material.ambient[0] = m_AmbientLight->m_Color.r * m_AmbientLight->m_Intensity;
+			material.ambient[1] = m_AmbientLight->m_Color.g * m_AmbientLight->m_Intensity;
+			material.ambient[2] = m_AmbientLight->m_Color.b * m_AmbientLight->m_Intensity;
+		}
+		C3D_LightEnvMaterial(&m_LightEnv, &material);
+
+		LightLut_Phong(&m_LutPhong, 30);
+		C3D_LightEnvLut(&m_LightEnv, GPU_LUT_D0, GPU_LUTINPUT_LN, false, &m_LutPhong);
+
+		int lightIndex = 0;
+		uint32_t directionalLightCount = static_cast<uint32_t>(std::min(m_DirectionalLights.size(), size_t(8)));
+		for (uint32_t i = 0; i < directionalLightCount && lightIndex < 8; i++, lightIndex++)
+		{
+			const Core::DirectionalLight* light = m_DirectionalLights[i];
+			glm::mat4 worldMatrix = light->GetWorldMatrix();
+			glm::vec3 direction = glm::normalize(glm::vec3(worldMatrix * glm::vec4(0.0f, 0.0f, -1.0f, 0.0f)));
+
+			C3D_FVec lightVec = FVec4_New(-direction.x, -direction.y, -direction.z, 0.0f);
+			C3D_LightInit(&m_Lights[lightIndex], &m_LightEnv);
+			C3D_LightColor(&m_Lights[lightIndex],
+				light->m_Color.r * light->m_Intensity,
+				light->m_Color.g * light->m_Intensity,
+				light->m_Color.b * light->m_Intensity
+			);
+			C3D_LightPosition(&m_Lights[lightIndex], &lightVec);
+		}
+
+		uint32_t pointLightCount = static_cast<uint32_t>(std::min(m_PointLights.size(), size_t(8 - lightIndex)));
+		for (uint32_t i = 0; i < pointLightCount && lightIndex < 8; i++, lightIndex++)
+		{
+			const Core::PointLight* light = m_PointLights[i];
+			glm::vec3 worldPos = glm::vec3(light->GetWorldMatrix()[3]);
+
+			C3D_FVec lightVec = FVec4_New(worldPos.x, worldPos.y, worldPos.z, 1.0f);
+			C3D_LightInit(&m_Lights[lightIndex], &m_LightEnv);
+			C3D_LightColor(&m_Lights[lightIndex],
+				light->m_Color.r * light->m_Intensity,
+				light->m_Color.g * light->m_Intensity,
+				light->m_Color.b * light->m_Intensity
+			);
+			C3D_LightPosition(&m_Lights[lightIndex], &lightVec);
+		}
+		
 		C3D_Mtx projection;
 		Mtx_PerspTilt(&projection, C3D_AngleFromDegrees(m_ActiveCamera->m_Fov), C3D_AspectRatioTop, 0.01f, 1000.0f, false);
 
@@ -116,7 +208,7 @@ namespace Nightbird::PICA
 
 			C3D_BufInfo* bufInfo = C3D_GetBufInfo();
 			BufInfo_Init(bufInfo);
-			BufInfo_Add(bufInfo, geometry.GetVertexBuffer(), sizeof(PICA::Vertex), 2, 0x10);
+			BufInfo_Add(bufInfo, geometry.GetVertexBuffer(), sizeof(PICA::Vertex), 3, 0x210);
 
 			C3D_DrawElements(GPU_TRIANGLES, geometry.GetIndexCount(), C3D_UNSIGNED_SHORT, geometry.GetIndexBuffer());
 		}
