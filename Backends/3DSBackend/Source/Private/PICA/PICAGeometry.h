@@ -14,6 +14,7 @@ namespace Nightbird::PICA
 	struct Vertex
 	{
 		float x, y, z; // position
+		float nx, ny, nz; // normal
 		float u, v; // texcoords
 	};
 

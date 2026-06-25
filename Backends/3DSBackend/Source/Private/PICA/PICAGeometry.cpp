@@ -25,6 +25,10 @@ namespace Nightbird::PICA
 			picaVertices[i].y = vertices[i].position.y;
 			picaVertices[i].z = vertices[i].position.z;
 
+			picaVertices[i].nx = vertices[i].normal.x;
+			picaVertices[i].ny = vertices[i].normal.y;
+			picaVertices[i].nz = vertices[i].normal.z;
+
 			picaVertices[i].u = vertices[i].baseColorTexCoord.x;
 			picaVertices[i].v = 1.0f - vertices[i].baseColorTexCoord.y;
 		}
