@@ -58,11 +58,11 @@ namespace Nightbird::Editor
 				GenerateProjectFile(m_ProjectConfig, installPath / "Templates" / "premake5.template.lua", m_ProjectConfig.path.parent_path() / "premake5.lua");
 				GenerateProjectFile(m_ProjectConfig, installPath / "Templates" / "Makefile.template.wiiu", m_ProjectConfig.path.parent_path() / "Makefile.wiiu");
 				GenerateProjectFile(m_ProjectConfig, installPath / "Templates" / "Makefile.template.3ds", m_ProjectConfig.path.parent_path() / "Makefile.3ds");
-				GenerateProjectFile(m_ProjectConfig, installPath / "Templates" / "Build-wiiu.template.bat", m_ProjectConfig.path.parent_path() / "Build-wiiu.bat");
-				GenerateProjectFile(m_ProjectConfig, installPath / "Templates" / "Build-3ds.template.bat", m_ProjectConfig.path.parent_path() / "Build-3ds.bat");
 
 #ifdef _WIN32
 				GenerateProjectFile(m_ProjectConfig, installPath / "Templates" / "Build-vs2022.template.bat", m_ProjectConfig.path.parent_path() / "Build-vs2022.bat");
+				GenerateProjectFile(m_ProjectConfig, installPath / "Templates" / "Build-wiiu.template.bat", m_ProjectConfig.path.parent_path() / "Build-wiiu.bat");
+				GenerateProjectFile(m_ProjectConfig, installPath / "Templates" / "Build-3ds.template.bat", m_ProjectConfig.path.parent_path() / "Build-3ds.bat");
 #else
 				GenerateProjectFile(m_ProjectConfig, installPath / "Templates" / "Build-linux.template.sh", m_ProjectConfig.path.parent_path() / "Build-linux.sh");
 				GenerateProjectFile(m_ProjectConfig, installPath / "Templates" / "Run-linux.template.sh", m_ProjectConfig.path.parent_path() / "Run-linux.sh");
