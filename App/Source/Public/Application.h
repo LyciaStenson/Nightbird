@@ -20,8 +20,10 @@ namespace Nightbird::App
 	private:
 		void Initialize();
 		int LoadProject();
-		void RunLoop();
-		void Shutdown();
+		void RunMainLoop();
+		void Render();
+		
+		float ComputeDeltaTime();
 		
 		std::unique_ptr<Core::Platform> m_Platform;
 		std::unique_ptr<Core::Renderer> m_Renderer;

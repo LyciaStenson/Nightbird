@@ -1,6 +1,5 @@
 #include "Scene/TextSceneWriter.h"
 
-#include "Core/Scene.h"
 #include "Core/SceneObject.h"
 #include "Core/Camera.h"
 #include "Core/Log.h"

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Core/Scene.h"
 #include "Core/TypeInfo.h"
 
 #include <uuid.h>
@@ -11,7 +12,6 @@
 
 namespace Nightbird::Core
 {
-	class Scene;
 	class SceneObject;
 }
 

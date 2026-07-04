@@ -1,7 +1,6 @@
 #include "Vulkan/Renderer.h"
 
 #include "Core/Platform.h"
-#include "Core/Scene.h"
 #include "Core/Camera.h"
 #include "Core/RenderSurface.h"
 #include "Core/TypeInfo.h"

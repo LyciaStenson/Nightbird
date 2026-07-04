@@ -10,12 +10,13 @@ namespace Nightbird::App
 	int Application::Run()
 	{
 		Initialize();
+
 		int result = LoadProject();
 		if (result != 0)
 			return result;
-		RunLoop();
-		Shutdown();
 
+		RunMainLoop();
+		
 		return 0;
 	}
 
@@ -58,12 +59,10 @@ namespace Nightbird::App
 		}
 	}
 
-	void Application::RunLoop()
+	void Application::RunMainLoop()
 	{
 		while (!m_Engine->ShouldClose())
 		{
-			m_Engine->Update();
-
 			int width, height;
 			m_Platform->GetFramebufferSize(&width, &height);
 			
@@ -73,18 +72,31 @@ namespace Nightbird::App
 				continue;
 			}
 
-			auto& surface = m_Renderer->GetDefaultSurface();
-			if (!m_Renderer->BeginFrame(surface))
-				continue;
-			if (m_Engine->GetScene().GetActiveCamera())
-				m_Renderer->SubmitScene(m_Engine->GetScene(), *m_Engine->GetScene().GetActiveCamera());
-			m_Renderer->DrawScene(surface);
-			m_Renderer->EndFrame(surface);
+			float deltaTime = ComputeDeltaTime();
+			m_Platform->Update();
+			m_Engine->Update(deltaTime);
+
+			Render();
 		}
 	}
 
-	void Application::Shutdown()
+	void Application::Render()
 	{
+		auto& surface = m_Renderer->GetDefaultSurface();
+		if (!m_Renderer->BeginFrame(surface))
+			return;
+		if (m_Engine->GetScene().GetActiveCamera())
+			m_Renderer->SubmitScene(m_Engine->GetScene(), *m_Engine->GetScene().GetActiveCamera());
+		m_Renderer->DrawScene(surface);
+		m_Renderer->EndFrame(surface);
+	}
 
+	float Application::ComputeDeltaTime()
+	{
+		static auto lastTime = std::chrono::high_resolution_clock::now();
+		auto currentTime = std::chrono::high_resolution_clock::now();
+		float deltaTime = std::chrono::duration<float>(currentTime - lastTime).count();
+		lastTime = currentTime;
+		return deltaTime;
 	}
 }

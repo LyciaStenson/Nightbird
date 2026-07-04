@@ -34,33 +34,20 @@ namespace Nightbird::Core
 		sink += nb_link_AudioSource;
 		sink += nb_link_Skybox;
 	}
-
-	Engine::~Engine()
-	{
-		m_Renderer.Shutdown();
-		m_Platform.Shutdown();
-	}
-
+	
 	bool Engine::ShouldClose() const
 	{
 		return m_Platform.ShouldClose();
 	}
 
-	float Engine::Update()
+	void Engine::Update(float deltaTime)
 	{
-		static auto lastTime = std::chrono::high_resolution_clock::now();
-
-		auto currentTime = std::chrono::high_resolution_clock::now();
-		m_DeltaTime = std::chrono::duration<float>(currentTime - lastTime).count();
-		lastTime = currentTime;
-
-		m_Platform.Update();
+		m_DeltaTime = deltaTime;
+		
 		m_InputSystem.Update(m_Platform.GetInputProvider());
 
 		if (m_Simulate)
 			m_Scene->Update(m_DeltaTime);
-		
-		return m_DeltaTime;
 	}
 
 	Platform& Engine::GetPlatform()

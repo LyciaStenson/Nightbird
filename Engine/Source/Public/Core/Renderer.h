@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Core/Scene.h"
+
 #include "RenderSurface.h"
 
 #include <memory>
@@ -7,7 +9,6 @@
 
 namespace Nightbird::Core
 {
-	class Scene;
 	class Camera;
 	class OffscreenSurface;
 	

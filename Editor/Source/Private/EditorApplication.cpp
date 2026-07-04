@@ -31,79 +31,189 @@ namespace Nightbird::Editor
 {
 	int EditorApplication::Run(int argc, char** argv)
 	{
+		InitializeBackend();
+
 		if (argc < 2)
 		{
-			Core::Log::Error("Usage: Editor <project_path> [options]");
-			return 1;
+			InitializeProjectCreationUI();
+			m_State = State::ProjectSelection;
 		}
-		
-		m_ProjectConfig = LoadProjectConfig(argv[1]);
-		if (m_ProjectConfig.name.empty())
+		else
 		{
-			Core::Log::Error("Invalid project name in: " + m_ProjectConfig.path.string());
-			return 1;
-		}
-
-		const char* envPath = std::getenv("NIGHTBIRD_PATH");
-		if (!envPath)
-			return 1;
-
-		std::filesystem::path installPath = std::filesystem::path(envPath);
-
-		for (int i = 2; i < argc; ++i)
-		{
-			std::string arg = argv[i];
-			if (arg == "--generate")
+			m_ProjectConfig = LoadProjectConfig(argv[1]);
+			if (m_ProjectConfig.name.empty())
 			{
-				GenerateProjectFile(m_ProjectConfig, installPath / "Templates" / "premake5.template.lua", m_ProjectConfig.path.parent_path() / "premake5.lua");
-				GenerateProjectFile(m_ProjectConfig, installPath / "Templates" / "Makefile.template.wiiu", m_ProjectConfig.path.parent_path() / "Makefile.wiiu");
-				GenerateProjectFile(m_ProjectConfig, installPath / "Templates" / "Makefile.template.3ds", m_ProjectConfig.path.parent_path() / "Makefile.3ds");
+				Core::Log::Error("Invalid project name in: " + m_ProjectConfig.path.string());
+				return 1;
+			}
+
+			const char* envPath = std::getenv("NIGHTBIRD_PATH");
+			if (!envPath)
+				return 1;
+
+			std::filesystem::path installPath = std::filesystem::path(envPath);
+
+			for (int i = 2; i < argc; ++i)
+			{
+				std::string arg = argv[i];
+				if (arg == "--generate")
+				{
+					GenerateProjectFile(m_ProjectConfig, installPath / "Templates" / "premake5.template.lua", m_ProjectConfig.path.parent_path() / "premake5.lua");
+					GenerateProjectFile(m_ProjectConfig, installPath / "Templates" / "Makefile.template.wiiu", m_ProjectConfig.path.parent_path() / "Makefile.wiiu");
+					GenerateProjectFile(m_ProjectConfig, installPath / "Templates" / "Makefile.template.3ds", m_ProjectConfig.path.parent_path() / "Makefile.3ds");
 
 #ifdef _WIN32
-				GenerateProjectFile(m_ProjectConfig, installPath / "Templates" / "Build-vs2022.template.bat", m_ProjectConfig.path.parent_path() / "Build-vs2022.bat");
-				GenerateProjectFile(m_ProjectConfig, installPath / "Templates" / "Build-wiiu.template.bat", m_ProjectConfig.path.parent_path() / "Build-wiiu.bat");
-				GenerateProjectFile(m_ProjectConfig, installPath / "Templates" / "Build-3ds.template.bat", m_ProjectConfig.path.parent_path() / "Build-3ds.bat");
+					GenerateProjectFile(m_ProjectConfig, installPath / "Templates" / "Build-vs2022.template.bat", m_ProjectConfig.path.parent_path() / "Build-vs2022.bat");
+					GenerateProjectFile(m_ProjectConfig, installPath / "Templates" / "Build-wiiu.template.bat", m_ProjectConfig.path.parent_path() / "Build-wiiu.bat");
+					GenerateProjectFile(m_ProjectConfig, installPath / "Templates" / "Build-3ds.template.bat", m_ProjectConfig.path.parent_path() / "Build-3ds.bat");
 #else
-				GenerateProjectFile(m_ProjectConfig, installPath / "Templates" / "Build-linux.template.sh", m_ProjectConfig.path.parent_path() / "Build-linux.sh");
-				GenerateProjectFile(m_ProjectConfig, installPath / "Templates" / "Run-linux.template.sh", m_ProjectConfig.path.parent_path() / "Run-linux.sh");
-				GenerateProjectFile(m_ProjectConfig, installPath / "Templates" / "Build-wiiu.template.sh", m_ProjectConfig.path.parent_path() / "Build-wiiu.sh");
-				GenerateProjectFile(m_ProjectConfig, installPath / "Templates" / "Build-3ds.template.sh", m_ProjectConfig.path.parent_path() / "Build-3ds.sh");
+					GenerateProjectFile(m_ProjectConfig, installPath / "Templates" / "Build-linux.template.sh", m_ProjectConfig.path.parent_path() / "Build-linux.sh");
+					GenerateProjectFile(m_ProjectConfig, installPath / "Templates" / "Run-linux.template.sh", m_ProjectConfig.path.parent_path() / "Run-linux.sh");
+					GenerateProjectFile(m_ProjectConfig, installPath / "Templates" / "Build-wiiu.template.sh", m_ProjectConfig.path.parent_path() / "Build-wiiu.sh");
+					GenerateProjectFile(m_ProjectConfig, installPath / "Templates" / "Build-3ds.template.sh", m_ProjectConfig.path.parent_path() / "Build-3ds.sh");
 #endif
-				
-				Core::Log::Info("Generated project build files for " + m_ProjectConfig.name);
-				return 0;
+
+					Core::Log::Info("Generated project build files for " + m_ProjectConfig.name);
+					return 0;
+				}
 			}
+
+			int result = InitializeProjectAndEditor();
+			if (result != 0)
+				return result;
+			
+			m_State = State::Editing;
 		}
 		
-		InitializeEngine();
+		RunMainLoop();
+		Shutdown();
+		return 0;
+	}
+
+	void EditorApplication::InitializeBackend()
+	{
+		m_Platform = Core::CreatePlatform();
+		m_Renderer = Core::CreateRenderer();
+
+		m_Platform->Initialize();
+		m_Renderer->Initialize();
+
+		m_EditorUIBackend = CreateEditorUIBackend(*m_Platform, *m_Renderer);
+		m_EditorUIBackend->Initialize();
+	}
+
+	int EditorApplication::InitializeProjectAndEditor()
+	{
+		Nightbird::TypeRegistry::InitReflection();
+		
+		m_ImportManager = std::make_unique<ImportManager>(m_ProjectConfig.path.parent_path() / "Assets");
+		m_Engine = std::make_unique<Core::Engine>(*m_Platform, *m_Renderer, *m_ImportManager);
 
 		int result = LoadProject();
 		if (result != 0)
 			return result;
 
-		InitializeEditor();
-		
-		RunEditorLoop();
-		Shutdown();
+		m_ImportManager->Scan();
+		m_CookManager = std::make_unique<CookManager>("Cooked", *m_ImportManager);
+
+		m_EditorContext = std::make_unique<EditorContext>(*m_Engine, *m_EditorUIBackend, *m_ImportManager, *m_CookManager);
+
+		InitializeSettings();
+		InitializeWindows();
+		InitializeEditorUI();
+
+		m_Renderer->InitializeSurface(m_WindowManager->GetWindow<SceneViewWindow>()->GetSurface());
+
+		// Unnecessary as render resources already created for identical SceneViewWindow surface
+		//m_Renderer->InitializeSurface(m_WindowManager->GetWindow<AppViewWindow>()->GetSurface());
 
 		return 0;
 	}
-
-	void EditorApplication::InitializeEngine()
+	
+	void EditorApplication::InitializeSettings()
 	{
-		Nightbird::TypeRegistry::InitReflection();
+		m_EditorSettings = m_SettingsManager.LoadEditorSettings();
+		if (m_ProjectLoaded)
+			m_ProjectSettings = m_SettingsManager.LoadProjectSettings(m_ProjectConfig.path.string());
+	}
 
-		m_Platform = Core::CreatePlatform();
-		m_Renderer = Core::CreateRenderer();
-		
-		m_ImportManager = std::make_unique<ImportManager>(m_ProjectConfig.path.parent_path() / "Assets");
+	void EditorApplication::InitializeWindows()
+	{
+		m_WindowManager = std::make_unique<WindowManager>();
 
-		m_Engine = std::make_unique<Core::Engine>(*m_Platform, *m_Renderer, *m_ImportManager);
+		m_WindowManager->AddWindow<BuildWindow>(*m_EditorContext);
+		m_WindowManager->AddWindow<AppViewWindow>(*m_EditorContext);
+		m_WindowManager->AddWindow<SceneViewWindow>(*m_EditorContext);
+		m_WindowManager->AddWindow<SceneOutliner>(*m_EditorContext);
+		m_WindowManager->AddWindow<Inspector>(*m_EditorContext);
+		m_WindowManager->AddWindow<AssetBrowser>(*m_EditorContext);
+		m_WindowManager->AddWindow<Editor::EditorSettingsWindow>(m_EditorSettings);
+		if (m_ProjectLoaded)
+			m_WindowManager->AddWindow<Editor::ProjectSettingsWindow>(m_ProjectSettings);
+		m_WindowManager->AddWindow<Editor::AboutWindow>();
+	}
 
-		m_Platform->Initialize();
-		m_Renderer->Initialize();
+	void EditorApplication::InitializeEditorUI()
+	{
+		m_EditorUI = std::make_unique<EditorUI>(*m_EditorContext, *m_WindowManager);
+		m_EditorUI->ApplyTheme(EditorTheme::Dark);
+	}
+
+	void EditorApplication::InitializeProjectCreationUI()
+	{
+		m_ProjectCreationUI = std::make_unique<ProjectCreationUI>();
+		m_ProjectCreationUI->ApplyTheme(EditorTheme::Dark);
+	}
+
+	void EditorApplication::RunMainLoop()
+	{
+		while (!m_Platform->ShouldClose())
+		{
+			int width, height;
+			m_Platform->GetFramebufferSize(&width, &height);
+
+			if (width == 0 || height == 0)
+			{
+				m_Platform->WaitEvents();
+				continue;
+			}
+
+			float deltaTime = ComputeDeltaTime();
+			m_Platform->Update();
+			if (m_State == State::Editing)
+				m_Engine->Update(deltaTime);
+
+			Render();
+		}
 	}
 	
+	void EditorApplication::Render()
+	{
+		auto& surface = m_Renderer->GetDefaultSurface();
+		if (!m_Renderer->BeginFrame(surface))
+			return;
+		
+		m_EditorUIBackend->BeginFrame();
+
+		if (m_State == State::Editing)
+			m_EditorUI->Render();
+		else if (m_State == State::ProjectSelection)
+			m_ProjectCreationUI->Render();
+		
+		m_EditorUIBackend->EndFrame();
+		m_Renderer->EndFrame(surface);
+	}
+
+	void EditorApplication::Shutdown()
+	{
+		m_WindowManager.reset();
+
+		m_EditorUIBackend->Shutdown();
+
+		m_Renderer->Shutdown();
+		m_Platform->Shutdown();
+	}
+
 	int EditorApplication::LoadProject()
 	{
 		if (m_ProjectConfig.path.empty())
@@ -111,7 +221,7 @@ namespace Nightbird::Editor
 			Core::Log::Error("No project specified");
 			return 1;
 		}
-		
+
 		// EDITORDEBUG ONLY
 		std::string configStr = "EditorDebug";
 
@@ -187,104 +297,12 @@ namespace Nightbird::Editor
 		}
 	}
 
-	void EditorApplication::InitializeEditor()
+	float EditorApplication::ComputeDeltaTime()
 	{
-		m_EditorUIBackend = CreateEditorUIBackend(m_Engine->GetPlatform(), m_Engine->GetRenderer());
-		m_EditorUIBackend->Initialize();
-
-		InitializeImportManager();
-		InitializeCookManager();
-
-		m_EditorContext = std::make_unique<EditorContext>(*m_Engine, *m_EditorUIBackend, *m_ImportManager, *m_CookManager);
-
-		InitializeSettings();
-		InitializeWindows();
-		InitializeEditorUI();
-
-		m_Renderer->InitializeSurface(m_WindowManager->GetWindow<SceneViewWindow>()->GetSurface());
-
-		// Unnecessary as render resources already created for identical SceneViewWindow surface
-		//m_Renderer->InitializeSurface(m_WindowManager->GetWindow<AppViewWindow>()->GetSurface());
-	}
-
-	void EditorApplication::InitializeSettings()
-	{
-		m_EditorSettings = m_SettingsManager.LoadEditorSettings();
-		if (m_ProjectLoaded)
-			m_ProjectSettings = m_SettingsManager.LoadProjectSettings(m_ProjectConfig.path.string());
-	}
-
-	void EditorApplication::InitializeWindows()
-	{
-		m_WindowManager = std::make_unique<WindowManager>();
-
-		m_WindowManager->AddWindow<BuildWindow>(*m_EditorContext);
-		m_WindowManager->AddWindow<AppViewWindow>(*m_EditorContext);
-		m_WindowManager->AddWindow<SceneViewWindow>(*m_EditorContext);
-		m_WindowManager->AddWindow<SceneOutliner>(*m_EditorContext);
-		m_WindowManager->AddWindow<Inspector>(*m_EditorContext);
-		m_WindowManager->AddWindow<AssetBrowser>(*m_EditorContext);
-		m_WindowManager->AddWindow<Editor::EditorSettingsWindow>(m_EditorSettings);
-		if (m_ProjectLoaded)
-			m_WindowManager->AddWindow<Editor::ProjectSettingsWindow>(m_ProjectSettings);
-		m_WindowManager->AddWindow<Editor::AboutWindow>();
-	}
-
-	void EditorApplication::InitializeEditorUI()
-	{
-		m_EditorUI = std::make_unique<EditorUI>(*m_EditorContext, *m_WindowManager);
-		m_EditorUI->ApplyTheme(EditorTheme::Dark);
-	}
-
-	void EditorApplication::InitializeImportManager()
-	{
-		m_ImportManager->Scan();
-	}
-
-	void EditorApplication::InitializeCookManager()
-	{
-		m_CookManager = std::make_unique<CookManager>("Cooked", *m_ImportManager);
-	}
-
-	void EditorApplication::RunEditorLoop()
-	{
-		while (!m_Engine->ShouldClose())
-		{
-			Update();
-
-			int width, height;
-			m_Platform->GetFramebufferSize(&width, &height);
-
-			if (width == 0 || height == 0)
-			{
-				m_Platform->WaitEvents();
-				continue;
-			}
-
-			Render();
-		}
-	}
-
-	void EditorApplication::Update()
-	{
-		m_Engine->Update();
-	}
-
-	void EditorApplication::Render()
-	{
-		auto& surface = m_Engine->GetRenderer().GetDefaultSurface();
-		if (!m_Engine->GetRenderer().BeginFrame(surface))
-			return;
-		
-		m_EditorUIBackend->BeginFrame();
-		m_EditorUI->Render();
-		m_EditorUIBackend->EndFrame();
-
-		m_Engine->GetRenderer().EndFrame(surface);
-	}
-
-	void EditorApplication::Shutdown()
-	{
-		m_EditorUIBackend->Shutdown();
+		static auto lastTime = std::chrono::high_resolution_clock::now();
+		auto currentTime = std::chrono::high_resolution_clock::now();
+		float deltaTime = std::chrono::duration<float>(currentTime - lastTime).count();
+		lastTime = currentTime;
+		return deltaTime;
 	}
 }

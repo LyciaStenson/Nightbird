@@ -1,6 +1,5 @@
 #include "GX2/GX2Renderer.h"
 
-#include "Core/Scene.h"
 #include "Core/Camera.h"
 #include "Core/MeshPrimitive.h"
 #include "Core/Material.h"

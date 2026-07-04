@@ -1,0 +1,137 @@
+#include "ProjectCreationUI.h"
+
+#include <imgui.h>
+
+namespace Nightbird::Editor
+{
+	void ProjectCreationUI::ApplyTheme(EditorTheme theme)
+	{
+		ImGuiStyle& style = ImGui::GetStyle();
+
+		switch (theme)
+		{
+			case EditorTheme::Light:
+			{
+				ImGui::StyleColorsLight();
+				break;
+			}
+			case EditorTheme::Dark:
+			{
+				ImGui::StyleColorsDark();
+
+				ImVec4* colors = ImGui::GetStyle().Colors;
+				colors[ImGuiCol_WindowBg] = ImVec4(0.08f, 0.08f, 0.08f, 1.00f);
+				colors[ImGuiCol_Border] = ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
+				colors[ImGuiCol_BorderShadow] = ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
+				colors[ImGuiCol_FrameBg] = ImVec4(0.24f, 0.24f, 0.24f, 1.00f);
+				colors[ImGuiCol_FrameBgHovered] = ImVec4(0.30f, 0.30f, 0.30f, 1.00f);
+				colors[ImGuiCol_FrameBgActive] = ImVec4(0.34f, 0.34f, 0.34f, 1.00f);
+				colors[ImGuiCol_TitleBg] = ImVec4(0.02f, 0.02f, 0.02f, 1.00f);
+				colors[ImGuiCol_TitleBgActive] = ImVec4(0.02f, 0.02f, 0.02f, 1.00f);
+				colors[ImGuiCol_TitleBgCollapsed] = ImVec4(0.02f, 0.02f, 0.02f, 1.00f);
+				colors[ImGuiCol_Button] = ImVec4(0.26f, 0.26f, 0.26f, 1.00f);
+				colors[ImGuiCol_ButtonHovered] = ImVec4(0.16f, 0.16f, 0.16f, 1.00f);
+				colors[ImGuiCol_ButtonActive] = ImVec4(0.36f, 0.36f, 0.36f, 1.00f);
+				colors[ImGuiCol_Header] = colors[ImGuiCol_Button];
+				colors[ImGuiCol_HeaderHovered] = colors[ImGuiCol_ButtonHovered];
+				colors[ImGuiCol_HeaderActive] = colors[ImGuiCol_Button];
+				colors[ImGuiCol_Separator] = ImVec4(0.50f, 0.50f, 0.50f, 1.00f);
+				colors[ImGuiCol_SeparatorHovered] = ImVec4(0.50f, 0.50f, 0.50f, 1.00f);
+				colors[ImGuiCol_SeparatorActive] = ImVec4(0.50f, 0.50f, 0.50f, 1.00f);
+				colors[ImGuiCol_Tab] = colors[ImGuiCol_Button];
+				colors[ImGuiCol_TabHovered] = colors[ImGuiCol_ButtonHovered];
+				colors[ImGuiCol_TabSelected] = colors[ImGuiCol_Button];
+				colors[ImGuiCol_TabSelectedOverline] = ImVec4(0.50f, 0.05f, 0.50f, 0.00f);
+				colors[ImGuiCol_TabDimmed] = colors[ImGuiCol_Button];
+				colors[ImGuiCol_TabDimmedSelected] = colors[ImGuiCol_Button];
+				colors[ImGuiCol_TabDimmedSelectedOverline] = ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
+				colors[ImGuiCol_DragDropTarget] = ImVec4(0.70f, 0.70f, 0.70f, 1.00f);
+				colors[ImGuiCol_DragDropTargetBg] = ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
+
+				break;
+			}
+		}
+
+		style.FramePadding = ImVec2(8.0f, 8.0f);
+		style.WindowPadding = ImVec2(12.0f, 12.0f);
+		style.FrameRounding = 3.0f;
+		style.WindowRounding = 10.0f;
+		style.FrameBorderSize = 0.0f;
+		style.WindowBorderSize = 0.0f;
+	}
+
+	void ProjectCreationUI::Render()
+	{
+		const ImGuiViewport* viewport = ImGui::GetMainViewport();
+
+		ImGui::SetNextWindowPos(viewport->WorkPos);
+		ImGui::SetNextWindowSize(viewport->WorkSize);
+
+		ImGuiWindowFlags flags = ImGuiWindowFlags_NoDecoration |
+			ImGuiWindowFlags_NoMove |
+			ImGuiWindowFlags_NoSavedSettings |
+			ImGuiWindowFlags_NoBringToFrontOnFocus |
+			ImGuiWindowFlags_NoNavFocus;
+
+		ImGui::Begin("##ProjectCreation", nullptr, flags);
+		ImGui::Text("Project Creation");
+		
+		ImGui::Dummy(ImVec2(0.0f, 15.0f));
+
+		ImGui::Text("Project Type:");
+		const char* projectTypes[] = { "Blank" };
+		static int selectedType = 0;
+		
+		for (int i = 0; i < IM_ARRAYSIZE(projectTypes); ++i)
+		{
+			bool isSelected = (selectedType == i);
+
+			if (isSelected)
+			{
+				ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.29f, 0.29f, 0.72f, 1.00f));
+				ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.16f, 0.16f, 0.40f, 1.00f));
+				ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.19f, 0.19f, 0.48f, 1.00f));
+			}
+			
+			if (ImGui::Button(projectTypes[i]))
+				selectedType = i;
+			
+			if (isSelected)
+				ImGui::PopStyleColor(3);
+			
+			if (i < IM_ARRAYSIZE(projectTypes) - 1)
+				ImGui::SameLine();
+		}
+		
+		ImGui::Dummy(ImVec2(0.0f, 15.0f));
+
+		static char projectLocation[256] = "";
+		static char projectName[256] = "";
+
+		if (ImGui::BeginTable("ProjectForm", 2))
+		{
+			ImGui::TableSetupColumn("Label", ImGuiTableColumnFlags_WidthFixed, 120.0f);
+			ImGui::TableSetupColumn("Value", ImGuiTableColumnFlags_WidthStretch);
+
+			ImGui::TableNextRow();
+			ImGui::TableSetColumnIndex(0);
+			ImGui::TextUnformatted("Project Location:");
+
+			ImGui::TableSetColumnIndex(1);
+			ImGui::SetNextItemWidth(-FLT_MIN);
+			ImGui::InputText("##Project Location", projectLocation, IM_ARRAYSIZE(projectLocation));
+
+			ImGui::TableNextRow();
+			ImGui::TableSetColumnIndex(0);
+			ImGui::TextUnformatted("Project Name:");
+
+			ImGui::TableSetColumnIndex(1);
+			ImGui::SetNextItemWidth(-FLT_MIN);
+			ImGui::InputText("##Project Name", projectName, IM_ARRAYSIZE(projectName));
+
+			ImGui::EndTable();
+		}
+
+		ImGui::End();
+	}
+}

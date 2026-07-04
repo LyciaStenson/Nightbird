@@ -1,6 +1,5 @@
 #include "PICA/PICARenderer.h"
 
-#include "Core/Scene.h"
 #include "Core/Camera.h"
 #include "Core/MeshPrimitive.h"
 #include "Core/Material.h"

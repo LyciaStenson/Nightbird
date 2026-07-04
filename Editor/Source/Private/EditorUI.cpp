@@ -31,38 +31,45 @@ namespace Nightbird::Editor
 		switch (theme)
 		{
 			case EditorTheme::Light:
+			{
 				ImGui::StyleColorsLight();
 				break;
+			}
 			case EditorTheme::Dark:
+			{
 				ImGui::StyleColorsDark();
 
 				ImVec4* colors = ImGui::GetStyle().Colors;
-				colors[ImGuiCol_WindowBg]					= ImVec4(0.08f, 0.08f, 0.08f, 1.00f);
-				colors[ImGuiCol_Border]						= ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
-				colors[ImGuiCol_BorderShadow]				= ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
-				colors[ImGuiCol_TitleBg]					= ImVec4(0.02f, 0.02f, 0.02f, 1.00f);
-				colors[ImGuiCol_TitleBgActive]				= ImVec4(0.02f, 0.02f, 0.02f, 1.00f);
-				colors[ImGuiCol_TitleBgCollapsed]			= ImVec4(0.02f, 0.02f, 0.02f, 1.00f);
-				colors[ImGuiCol_Button]						= ImVec4(0.26f, 0.26f, 0.26f, 1.00f);
-				colors[ImGuiCol_ButtonHovered]				= ImVec4(0.16f, 0.16f, 0.16f, 1.00f);
-				colors[ImGuiCol_ButtonActive]				= ImVec4(0.36f, 0.36f, 0.36f, 1.00f);
-				colors[ImGuiCol_Header]						= colors[ImGuiCol_Button];
-				colors[ImGuiCol_HeaderHovered]				= colors[ImGuiCol_ButtonHovered];
-				colors[ImGuiCol_HeaderActive]				= colors[ImGuiCol_Button];
-				colors[ImGuiCol_Separator]					= ImVec4(0.50f, 0.50f, 0.50f, 1.00f);
-				colors[ImGuiCol_SeparatorHovered]			= ImVec4(0.50f, 0.50f, 0.50f, 1.00f);
-				colors[ImGuiCol_SeparatorActive]			= ImVec4(0.50f, 0.50f, 0.50f, 1.00f);
-				colors[ImGuiCol_Tab]						= colors[ImGuiCol_Button];
-				colors[ImGuiCol_TabHovered]					= colors[ImGuiCol_ButtonHovered];
-				colors[ImGuiCol_TabSelected]				= colors[ImGuiCol_Button];
-				colors[ImGuiCol_TabSelectedOverline]		= ImVec4(0.50f, 0.05f, 0.50f, 0.00f);
-				colors[ImGuiCol_TabDimmed]					= colors[ImGuiCol_Button];
-				colors[ImGuiCol_TabDimmedSelected]			= colors[ImGuiCol_Button];
-				colors[ImGuiCol_TabDimmedSelectedOverline]	= ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
-				colors[ImGuiCol_DragDropTarget]				= ImVec4(0.70f, 0.70f, 0.70f, 1.00f);
-				colors[ImGuiCol_DragDropTargetBg]			= ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
+				colors[ImGuiCol_WindowBg] = ImVec4(0.08f, 0.08f, 0.08f, 1.00f);
+				colors[ImGuiCol_Border] = ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
+				colors[ImGuiCol_BorderShadow] = ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
+				colors[ImGuiCol_FrameBg] = ImVec4(0.24f, 0.24f, 0.24f, 1.00f);
+				colors[ImGuiCol_FrameBgHovered] = ImVec4(0.30f, 0.30f, 0.30f, 1.00f);
+				colors[ImGuiCol_FrameBgActive] = ImVec4(0.34f, 0.34f, 0.34f, 1.00f);
+				colors[ImGuiCol_TitleBg] = ImVec4(0.02f, 0.02f, 0.02f, 1.00f);
+				colors[ImGuiCol_TitleBgActive] = ImVec4(0.02f, 0.02f, 0.02f, 1.00f);
+				colors[ImGuiCol_TitleBgCollapsed] = ImVec4(0.02f, 0.02f, 0.02f, 1.00f);
+				colors[ImGuiCol_Button] = ImVec4(0.26f, 0.26f, 0.26f, 1.00f);
+				colors[ImGuiCol_ButtonHovered] = ImVec4(0.16f, 0.16f, 0.16f, 1.00f);
+				colors[ImGuiCol_ButtonActive] = ImVec4(0.36f, 0.36f, 0.36f, 1.00f);
+				colors[ImGuiCol_Header] = colors[ImGuiCol_Button];
+				colors[ImGuiCol_HeaderHovered] = colors[ImGuiCol_ButtonHovered];
+				colors[ImGuiCol_HeaderActive] = colors[ImGuiCol_Button];
+				colors[ImGuiCol_Separator] = ImVec4(0.50f, 0.50f, 0.50f, 1.00f);
+				colors[ImGuiCol_SeparatorHovered] = ImVec4(0.50f, 0.50f, 0.50f, 1.00f);
+				colors[ImGuiCol_SeparatorActive] = ImVec4(0.50f, 0.50f, 0.50f, 1.00f);
+				colors[ImGuiCol_Tab] = colors[ImGuiCol_Button];
+				colors[ImGuiCol_TabHovered] = colors[ImGuiCol_ButtonHovered];
+				colors[ImGuiCol_TabSelected] = colors[ImGuiCol_Button];
+				colors[ImGuiCol_TabSelectedOverline] = ImVec4(0.50f, 0.05f, 0.50f, 0.00f);
+				colors[ImGuiCol_TabDimmed] = colors[ImGuiCol_Button];
+				colors[ImGuiCol_TabDimmedSelected] = colors[ImGuiCol_Button];
+				colors[ImGuiCol_TabDimmedSelectedOverline] = ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
+				colors[ImGuiCol_DragDropTarget] = ImVec4(0.70f, 0.70f, 0.70f, 1.00f);
+				colors[ImGuiCol_DragDropTargetBg] = ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
 
 				break;
+			}
 		}
 		
 		style.FramePadding = ImVec2(8.0f, 8.0f);

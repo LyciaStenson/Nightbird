@@ -13,6 +13,7 @@
 #include "ImGuiPlatform.h"
 #include "ImGuiRenderer.h"
 #include "EditorUI.h"
+#include "ProjectCreationUI.h"
 #include "EditorContext.h"
 #include "WindowManager.h"
 #include "Cook/CookManager.h"
@@ -38,20 +39,25 @@ namespace Nightbird::Editor
 
 		int Run(int argc, char** argv);
 
+		enum class State
+		{
+			ProjectSelection, Editing
+		};
+
 	private:
-		void InitializeEngine();
-		void InitializeEditor();
-		int LoadProject();
-		void UnloadProject();
+		void InitializeBackend();
+		int InitializeProjectAndEditor();
 		void InitializeSettings();
 		void InitializeWindows();
 		void InitializeEditorUI();
-		void InitializeImportManager();
-		void InitializeCookManager();
-		void RunEditorLoop();
-		void Update();
+		void InitializeProjectCreationUI();
+		void RunMainLoop();
 		void Render();
 		void Shutdown();
+
+		int LoadProject();
+		void UnloadProject();
+		float ComputeDeltaTime();
 
 		std::unique_ptr<Core::Platform> m_Platform;
 		std::unique_ptr<Core::Renderer> m_Renderer;
@@ -59,6 +65,7 @@ namespace Nightbird::Editor
 		std::unique_ptr<Core::Engine> m_Engine;
 		std::unique_ptr<EditorUIBackend> m_EditorUIBackend;
 		std::unique_ptr<EditorUI> m_EditorUI;
+		std::unique_ptr<ProjectCreationUI> m_ProjectCreationUI;
 		std::unique_ptr<EditorContext> m_EditorContext;
 		std::unique_ptr<WindowManager> m_WindowManager;
 		std::unique_ptr<CookManager> m_CookManager;
@@ -66,6 +73,8 @@ namespace Nightbird::Editor
 		SettingsManager m_SettingsManager;
 		EditorSettings m_EditorSettings;
 		ProjectSettings m_ProjectSettings;
+
+		State m_State = State::ProjectSelection;
 
 		ProjectConfig m_ProjectConfig;
 		bool m_ProjectLoaded = false;
