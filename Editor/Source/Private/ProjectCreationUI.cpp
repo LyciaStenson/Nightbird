@@ -78,13 +78,17 @@ namespace Nightbird::Editor
 		
 		ImGui::Dummy(ImVec2(0.0f, 15.0f));
 
-		ImGui::Text("Project Type:");
-		const char* projectTypes[] = { "Blank" };
-		static int selectedType = 0;
+		ImGui::Text("Project Template:");
+		ImGui::Dummy(ImVec2(0.0f, 2.0f));
 		
-		for (int i = 0; i < IM_ARRAYSIZE(projectTypes); ++i)
+		const char* projectTemplates[] = { "Blank", "First Person", "Third Person" };
+		static int selectedTemplate = -1;
+
+		ImVec2 templateSize = ImVec2(110.0f, 120.0f);
+		
+		for (int i = 0; i < IM_ARRAYSIZE(projectTemplates); ++i)
 		{
-			bool isSelected = (selectedType == i);
+			bool isSelected = (selectedTemplate == i);
 
 			if (isSelected)
 			{
@@ -93,13 +97,19 @@ namespace Nightbird::Editor
 				ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.19f, 0.19f, 0.48f, 1.00f));
 			}
 			
-			if (ImGui::Button(projectTypes[i]))
-				selectedType = i;
+			if (i > 0)
+				ImGui::BeginDisabled();
+
+			if (ImGui::Button(projectTemplates[i], templateSize))
+				selectedTemplate = i;
+
+			if (i > 0)
+				ImGui::EndDisabled();
 			
 			if (isSelected)
 				ImGui::PopStyleColor(3);
 			
-			if (i < IM_ARRAYSIZE(projectTypes) - 1)
+			if (i < IM_ARRAYSIZE(projectTemplates) - 1)
 				ImGui::SameLine();
 		}
 		
@@ -130,6 +140,11 @@ namespace Nightbird::Editor
 			ImGui::InputText("##Project Name", projectName, IM_ARRAYSIZE(projectName));
 
 			ImGui::EndTable();
+		}
+
+		if (ImGui::Button("Create Project"))
+		{
+
 		}
 
 		ImGui::End();
