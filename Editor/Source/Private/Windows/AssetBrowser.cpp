@@ -35,6 +35,8 @@ namespace Nightbird::Editor
 		: ImGuiWindow("Asset Browser", open), m_Context(context)
 	{
 		m_CurrentPath = context.GetImportManager().GetAssetsDir();
+
+		std::filesystem::create_directories(m_CurrentPath);
 	}
 
 	void AssetBrowser::OnRender()

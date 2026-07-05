@@ -31,10 +31,9 @@ namespace Nightbird::Editor
 {
 	int EditorApplication::Run(int argc, char** argv)
 	{
-		InitializeBackend();
-
 		if (argc < 2)
 		{
+			InitializeBackend();
 			InitializeProjectCreationUI();
 			m_State = State::ProjectSelection;
 		}
@@ -78,6 +77,7 @@ namespace Nightbird::Editor
 				}
 			}
 
+			InitializeBackend();
 			int result = InitializeProjectAndEditor();
 			if (result != 0)
 				return result;

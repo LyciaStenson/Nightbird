@@ -1,6 +1,7 @@
 #include "ProjectCreationUI.h"
 
 #include "ProjectConfig.h"
+#include "Core/Log.h"
 
 #include <imgui.h>
 
@@ -152,7 +153,7 @@ namespace Nightbird::Editor
 			ImGui::EndTable();
 		}
 
-		if (projectLocation[0] == '\0' || projectName[0] == '\0')
+		if (projectLocation[0] == '\0' || projectName[0] == '\0' || selectedTemplate < 0)
 			ImGui::BeginDisabled();
 
 		if (ImGui::Button("Create Project"))
@@ -166,6 +167,30 @@ namespace Nightbird::Editor
 				std::filesystem::path templatePath = std::filesystem::path(envPath) / "Templates" / "Projects" / "Blank";
 
 				std::filesystem::copy(templatePath, projectPath, std::filesystem::copy_options::recursive);
+				
+				for (const auto& entry : std::filesystem::recursive_directory_iterator(projectPath))
+				{
+					if (!entry.is_regular_file())
+						continue;
+
+					const auto& path = entry.path();
+
+					std::string filename = path.filename().string();
+					if (filename.find("%PROJECT_NAME%") == std::string::npos)
+						continue;
+					
+					ReplaceAll(filename, "%PROJECT_NAME%", projectName);
+					
+					std::filesystem::path newPath = path.parent_path() / filename;
+
+					std::error_code ec;
+					std::filesystem::rename(path, newPath, ec);
+
+					if (ec)
+					{
+						Core::Log::Error("Rename failed: " + ec.message());
+					}
+				}
 
 				for (const auto& entry : std::filesystem::recursive_directory_iterator(projectPath))
 				{
@@ -175,23 +200,21 @@ namespace Nightbird::Editor
 					std::ifstream in(entry.path(), std::ios::binary);
 					if (!in)
 						continue;
-
+					
 					std::string contents((std::istreambuf_iterator<char>(in)), std::istreambuf_iterator<char>());
-
-					in.close();
 
 					ReplaceAll(contents, "%PROJECT_NAME%", projectName);
 
 					std::ofstream out(entry.path(), std::ios::binary | std::ios::trunc);
 					out.write(contents.data(), contents.size());
-
-					projectCreated = true;
-					projectJustCreated = true;
 				}
+				
+				projectCreated = true;
+				projectJustCreated = true;
 			}
 		}
 
-		if (projectLocation[0] == '\0' || projectName[0] == '\0')
+		if (projectLocation[0] == '\0' || projectName[0] == '\0' || selectedTemplate < 0)
 			ImGui::EndDisabled();
 
 		// projectJustCreated guards against ending disabled region that was never opened

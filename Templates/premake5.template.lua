@@ -71,6 +71,25 @@ project "Editor"
 
 	targetdir ("%{wks.location}/Binaries/" .. outputdir)
 	objdir ("%{wks.location}/Intermediate/" .. outputdir)
+	
+	files {
+		enginePath .. "Editor/Source/Public/**.h",
+		enginePath .. "Editor/Source/Private/**.h",
+		enginePath .. "Editor/Source/Private/**.cpp",
+	}
+	
+	includedirs {
+		enginePath .. "Editor/Source/Public",
+		enginePath .. "Editor/Source/Private",
+		enginePath .. "Editor/Vendor/tomlplusplus",
+		enginePath .. "Editor/Vendor/fastgltf/include",
+		enginePath .. "Editor/Vendor/dr_libs",
+		enginePath .. "Editor/Vendor/imgui",
+		enginePath .. "Engine/Source/Public",
+		enginePath .. "Engine/Vendor/glm",
+		enginePath .. "Engine/Vendor/stb",
+		enginePath .. "Engine/Vendor/stduuid"
+	}
 
 	filter { "system:windows" }
 		debugcommand (enginePath .. "Binaries/" .. outputdir .. "/Editor.exe")
