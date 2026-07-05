@@ -1,6 +1,10 @@
 #include "ProjectCreationUI.h"
 
+#include "Core/Log.h"
+
 #include <imgui.h>
+
+#include <filesystem>
 
 namespace Nightbird::Editor
 {
@@ -142,10 +146,20 @@ namespace Nightbird::Editor
 			ImGui::EndTable();
 		}
 
+		if (projectLocation[0] == '\0' || projectName[0] == '\0')
+			ImGui::BeginDisabled();
+
 		if (ImGui::Button("Create Project"))
 		{
+			std::filesystem::path projectLocationPath = std::filesystem::path(projectLocation).make_preferred();
 
+			projectLocationPath = projectLocationPath / projectName;
+
+			Core::Log::Info("Project Location Path: " + projectLocationPath.string());
 		}
+
+		if (projectLocation[0] == '\0' || projectName[0] == '\0')
+			ImGui::EndDisabled();
 
 		ImGui::End();
 	}
