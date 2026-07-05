@@ -1,10 +1,11 @@
 #include "ProjectCreationUI.h"
 
-#include "Core/Log.h"
+#include "ProjectConfig.h"
 
 #include <imgui.h>
 
 #include <filesystem>
+#include <fstream>
 
 namespace Nightbird::Editor
 {
@@ -84,6 +85,11 @@ namespace Nightbird::Editor
 
 		ImGui::Text("Project Template:");
 		ImGui::Dummy(ImVec2(0.0f, 2.0f));
+
+		bool projectJustCreated = false;
+		static bool projectCreated = false;
+		if (projectCreated)
+			ImGui::BeginDisabled();
 		
 		const char* projectTemplates[] = { "Blank", "First Person", "Third Person" };
 		static int selectedTemplate = -1;
@@ -151,16 +157,58 @@ namespace Nightbird::Editor
 
 		if (ImGui::Button("Create Project"))
 		{
-			std::filesystem::path projectLocationPath = std::filesystem::path(projectLocation).make_preferred();
+			std::filesystem::path projectPath = std::filesystem::path(projectLocation).make_preferred() / projectName;
+			std::filesystem::create_directories(projectPath);
+			
+			const char* envPath = std::getenv("NIGHTBIRD_PATH");
+			if (envPath)
+			{
+				std::filesystem::path templatePath = std::filesystem::path(envPath) / "Templates" / "Projects" / "Blank";
 
-			projectLocationPath = projectLocationPath / projectName;
+				std::filesystem::copy(templatePath, projectPath, std::filesystem::copy_options::recursive);
 
-			Core::Log::Info("Project Location Path: " + projectLocationPath.string());
+				for (const auto& entry : std::filesystem::recursive_directory_iterator(projectPath))
+				{
+					if (!entry.is_regular_file())
+						continue;
+
+					std::ifstream in(entry.path(), std::ios::binary);
+					if (!in)
+						continue;
+
+					std::string contents((std::istreambuf_iterator<char>(in)), std::istreambuf_iterator<char>());
+
+					in.close();
+
+					ReplaceAll(contents, "%PROJECT_NAME%", projectName);
+
+					std::ofstream out(entry.path(), std::ios::binary | std::ios::trunc);
+					out.write(contents.data(), contents.size());
+
+					projectCreated = true;
+					projectJustCreated = true;
+				}
+			}
 		}
 
 		if (projectLocation[0] == '\0' || projectName[0] == '\0')
 			ImGui::EndDisabled();
 
+		// projectJustCreated guards against ending disabled region that was never opened
+		if (projectCreated && !projectJustCreated)
+			ImGui::EndDisabled();
+
 		ImGui::End();
+	}
+
+	void ProjectCreationUI::ReplaceAll(std::string& string, const std::string& from, const std::string& to)
+	{
+		size_t pos = 0;
+
+		while ((pos = string.find(from, pos)) != std::string::npos)
+		{
+			string.replace(pos, from.length(), to);
+			pos += to.length();
+		}
 	}
 }

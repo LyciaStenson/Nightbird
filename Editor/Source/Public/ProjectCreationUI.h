@@ -2,6 +2,8 @@
 
 #include "EditorTheme.h"
 
+#include <string>
+
 namespace Nightbird::Editor
 {
 	class ProjectCreationUI
@@ -10,5 +12,7 @@ namespace Nightbird::Editor
 		void ApplyTheme(EditorTheme theme);
 
 		void Render();
+
+		void ReplaceAll(std::string& string, const std::string& from, const std::string& to);
 	};
 }
