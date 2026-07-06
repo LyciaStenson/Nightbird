@@ -2,7 +2,7 @@
 setlocal
 
 set CONFIG=%1
-if "%CONFIG%"=="" set CONFIG=editordebug
+if "%CONFIG%"=="" set CONFIG=editorrelease
 
 set PLATFORM=%2
 if "%PLATFORM%"=="" set PLATFORM=desktop

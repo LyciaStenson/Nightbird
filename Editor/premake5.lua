@@ -19,6 +19,10 @@ project "Editor"
 		"Source/Private/**.cpp"
 	}
 
+	filter "system:windows"
+		files { "Assets/Editor.rc" }
+	filter { }
+
 	includedirs {
 		"Source/Public",
 		"Source/Private",

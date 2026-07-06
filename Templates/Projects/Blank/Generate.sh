@@ -1,6 +1,6 @@
 #!/bin/bash
 
-CONFIG=${1:-editordebug}
+CONFIG=${1:-editorrelease}
 PLATFORM=${2:-desktop}
 
 case "$CONFIG" in

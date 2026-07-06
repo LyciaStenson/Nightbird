@@ -14,7 +14,6 @@
 #include <fastgltf/tools.hpp>
 #include <glm/glm.hpp>
 
-#define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 
 #include <string>

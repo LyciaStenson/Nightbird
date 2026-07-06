@@ -1,11 +1,37 @@
 #include "Glfw/Platform.h"
 
+#define STB_IMAGE_IMPLEMENTATION
+#include <stb_image.h>
+
+#ifdef _WIN32
+#include <windows.h>
+#include <filesystem>
+#endif
+
 namespace Nightbird::Glfw
 {
+#ifdef _WIN32
+	std::filesystem::path GetExeDir()
+	{
+		wchar_t buffer[MAX_PATH];
+		GetModuleFileName(nullptr, buffer, MAX_PATH);
+		return std::filesystem::path(buffer).parent_path();
+	}
+#endif
+
 	void Platform::Initialize()
 	{
 		glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 		m_Window = glfwCreateWindow(1280, 720, "Nightbird", nullptr, nullptr);
+
+		std::filesystem::path iconPath = GetExeDir() / "Icon.png";
+		GLFWimage icon;
+		icon.pixels = stbi_load(iconPath.string().c_str(), &icon.width, &icon.height, 0, 4);
+		if (icon.pixels)
+		{
+			glfwSetWindowIcon(m_Window, 1, &icon);
+			stbi_image_free(icon.pixels);
+		}
 
 		m_InputProvider = std::make_unique<InputProvider>(m_Window);
 

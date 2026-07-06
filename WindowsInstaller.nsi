@@ -31,6 +31,8 @@
 ; Interface Settings
 
   !define MUI_ABORTWARNING
+  !define MUI_ICON "Editor\Assets\Icon.ico"
+  !define MUI_UNICON "Editor\Assets\Icon.ico"
 
 ;--------------------------------
 ; Pages
@@ -106,7 +108,6 @@ Section "Nightbird Engine" SecNightbird
 
     ; Create shortcuts
     CreateShortcut "$SMPROGRAMS\$StartMenuFolder\Nightbird Editor.lnk" "$INSTDIR\Binaries\windows-x86_64\EditorRelease\Editor.exe"
-    CreateShortcut "$SMPROGRAMS\$StartMenuFolder\UninstallNightbird.lnk" "$INSTDIR\UninstallNightbird.exe"
 
   !insertmacro MUI_STARTMENU_WRITE_END
 
