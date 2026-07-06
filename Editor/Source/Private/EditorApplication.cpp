@@ -33,7 +33,7 @@ namespace Nightbird::Editor
 	{
 		if (argc < 2)
 		{
-			InitializeBackend();
+			InitializeBackend(540, 640, "Nightbird Editor 0.1.0 | Project Creation");
 			InitializeProjectCreationUI();
 			m_State = State::ProjectSelection;
 		}
@@ -77,7 +77,7 @@ namespace Nightbird::Editor
 				}
 			}
 
-			InitializeBackend();
+			InitializeBackend(1280, 720, "Nightbird Editor 0.1.0");
 			int result = InitializeProjectAndEditor();
 			if (result != 0)
 				return result;
@@ -90,12 +90,12 @@ namespace Nightbird::Editor
 		return 0;
 	}
 
-	void EditorApplication::InitializeBackend()
+	void EditorApplication::InitializeBackend(int width, int height, const char* name)
 	{
 		m_Platform = Core::CreatePlatform();
 		m_Renderer = Core::CreateRenderer();
 
-		m_Platform->Initialize();
+		m_Platform->Initialize(width, height, name);
 		m_Renderer->Initialize();
 
 		m_EditorUIBackend = CreateEditorUIBackend(*m_Platform, *m_Renderer);

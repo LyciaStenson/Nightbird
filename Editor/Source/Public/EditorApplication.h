@@ -45,7 +45,7 @@ namespace Nightbird::Editor
 		};
 
 	private:
-		void InitializeBackend();
+		void InitializeBackend(int width, int height, const char* name);
 		int InitializeProjectAndEditor();
 		void InitializeSettings();
 		void InitializeWindows();

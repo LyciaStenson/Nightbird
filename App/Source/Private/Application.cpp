@@ -25,7 +25,7 @@ namespace Nightbird::App
 		m_Platform = Core::CreatePlatform();
 		m_Renderer = Core::CreateRenderer();
 
-		m_Platform->Initialize();
+		m_Platform->Initialize(1280, 720, "Nightbird Project");
 		m_Renderer->Initialize();
 		m_Renderer->InitializeSurface(m_Renderer->GetDefaultSurface());
 

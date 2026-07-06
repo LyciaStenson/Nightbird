@@ -16,7 +16,7 @@ namespace Nightbird::Glfw
 	class Platform : public Core::Platform
 	{
 	public:
-		void Initialize() override;
+		void Initialize(int width, int height, const char* name) override;
 		void Shutdown() override;
 		void Update() override;
 		void WaitEvents() override;

@@ -22,7 +22,7 @@ namespace Nightbird::WiiU
 		Core::Log::SetErrorFunc([](const std::string& message) { WHBLogPrintf("[Error] %s", message.c_str()); });
 	}
 
-	void Platform::Initialize()
+	void Platform::Initialize(int width, int height, const char* name)
 	{
 		m_AudioProvider.Initialize();
 	}

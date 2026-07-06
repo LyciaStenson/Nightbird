@@ -19,7 +19,7 @@ namespace Nightbird::Core
 	public:
 		virtual ~Platform() = default;
 
-		virtual void Initialize() = 0;
+		virtual void Initialize(int width, int height, const char* name) = 0;
 		virtual void Shutdown() = 0;
 		virtual void Update() = 0;
 		virtual void WaitEvents() = 0;

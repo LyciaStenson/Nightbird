@@ -11,7 +11,7 @@ namespace Nightbird::WiiU
 	{
 	public:
 		Platform();
-		virtual void Initialize() override;
+		virtual void Initialize(int width, int height, const char* name) override;
 		virtual void Shutdown() override;
 		virtual void Update() override;
 		virtual void WaitEvents() override;

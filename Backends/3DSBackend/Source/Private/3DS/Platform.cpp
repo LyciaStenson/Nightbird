@@ -18,7 +18,7 @@ namespace Nightbird::N3DS
 		Core::Log::SetErrorFunc([](const std::string& message) { printf("[Error] %s\n", message.c_str()); });
 	}
 
-	void Platform::Initialize()
+	void Platform::Initialize(int width, int height, const char* name)
 	{
 		m_AudioProvider.Initialize();
 	}

@@ -19,10 +19,10 @@ namespace Nightbird::Glfw
 	}
 #endif
 
-	void Platform::Initialize()
+	void Platform::Initialize(int width, int height, const char* name)
 	{
 		glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-		m_Window = glfwCreateWindow(1280, 720, "Nightbird", nullptr, nullptr);
+		m_Window = glfwCreateWindow(width, height, name, nullptr, nullptr);
 
 		std::filesystem::path iconPath = GetExeDir() / "Icon.png";
 		GLFWimage icon;
