@@ -29,12 +29,8 @@ namespace Nightbird::Editor
 
 	void ImportManager::Scan()
 	{
-		if (!std::filesystem::exists(m_AssetsDir))
-		{
-			Core::Log::Warning("Assets directory does not exist: " + m_AssetsDir.string());
-			return;
-		}
-
+		std::filesystem::create_directories(m_AssetsDir);
+		
 		for (const auto& entry : std::filesystem::recursive_directory_iterator(m_AssetsDir))
 		{
 			if (!entry.is_regular_file())

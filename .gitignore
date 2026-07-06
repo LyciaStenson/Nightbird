@@ -11,6 +11,9 @@
 
 /Binaries
 /Intermediate
+/Staging
+
+NightbirdInstaller.exe
 
 Makefile
 *.make

@@ -158,10 +158,10 @@ project "%PROJECT_NAME%"
 		local projectBinaries = "%{wks.location}/Binaries/%{cfg.system}-%{cfg.architecture}/%{cfg.buildcfg}/"
 
 		postbuildcommands {
-			"{COPYFILE} " .. engineBinaries .. "Pbr.vert.spv " .. projectBinaries .. "Pbr.vert.spv",
-			"{COPYFILE} " .. engineBinaries .. "Pbr.frag.spv " .. projectBinaries .. "Pbr.frag.spv",
-			"{COPYFILE} " .. engineBinaries .. "Skybox.vert.spv " .. projectBinaries .. "Skybox.vert.spv",
-			"{COPYFILE} " .. engineBinaries .. "Skybox.frag.spv " .. projectBinaries .. "Skybox.frag.spv"
+			'{COPYFILE} "' .. engineBinaries .. 'Pbr.vert.spv" "' .. projectBinaries .. 'Pbr.vert.spv"',
+			'{COPYFILE} "' .. engineBinaries .. 'Pbr.frag.spv" "' .. projectBinaries .. 'Pbr.frag.spv"',
+			'{COPYFILE} "' .. engineBinaries .. 'Skybox.vert.spv" "' .. projectBinaries .. 'Skybox.vert.spv"',
+			'{COPYFILE} "' .. engineBinaries .. 'Skybox.frag.spv" "' .. projectBinaries .. 'Skybox.frag.spv"'
 		}
 	filter { }
 
