@@ -17,7 +17,7 @@
   Unicode True
 
   ; Default installation folder
-  InstallDir "$PROGRAMFILES64\Nightbird"
+  InstallDir "C:\Nightbird"
 
   ; Request application privileges for Windows Vista and later
   RequestExecutionLevel admin

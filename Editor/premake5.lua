@@ -38,6 +38,10 @@ project "Editor"
 
 	defines { "NB_EDITOR_BUILD" }
 
+	postbuildcommands {
+		'{COPYFILE} "' .. 'Assets/Icon.png" "' .. outBinDir .. '/Icon.png"'
+	}
+
 	filter { "configurations:EditorDebug or EditorRelease" }
 		links { "EditorGlfwVulkanBackend", "EditorGlfwPlatform", "EditorVulkanRenderer", "GlfwVulkanBackend", "GlfwPlatform", "VulkanRenderer", "GLFW", "imgui", "fastgltf", "Engine" }
 	filter { }

@@ -13,11 +13,22 @@ if exist "Staging" (
 echo Copying Nightbird (excluding Intermediate, Binaries, VS artifacts)
 robocopy "%SRC%" "%DST%" /E ^
 	/XD Intermediate Binaries Staging .vs .git obj x64 x86 Debug Release ^
-	/XF *.vcxproj *.vcxproj.filters *.vcxproj.user *.sln *.suo *.user .gitattributes .gitignore Staging.bat WindowsInstaller.nsi NightbirdInstaller.exe
+	/XF *.vcxproj *.vcxproj.filters *.vcxproj.user *.sln *.suo *.user .gitattributes .gitignore Stage.bat WindowsInstaller.nsi NightbirdInstaller.exe
 
 rem robocopy exit codes 0-7 are success/informational; 8+ indicate failure
 if %ERRORLEVEL% GEQ 8 (
 	echo Main tree copy failed with error %ERRORLEVEL%.
+	exit /b 1
+)
+
+echo Copying template .gitignore for Blank project template
+if not exist "%SRC%\Templates\Projects\Blank\.gitignore" (
+	echo Failed to find Blank template project .gitignore.
+	exit /b 1
+)
+copy /Y "%SRC%\Templates\Projects\Blank\.gitignore" "%DST%\Templates\Projects\Blank\.gitignore" >nul
+if !ERRORLEVEL! NEQ 0 (
+	echo Failed to copy Blank template project .gigignore with error !ERRORLEVEL!.
 	exit /b 1
 )
 
