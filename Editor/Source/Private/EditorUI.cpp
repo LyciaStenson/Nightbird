@@ -120,7 +120,7 @@ namespace Nightbird::Editor
 				}
 				if (ImGui::MenuItem("Exit"))
 				{
-
+					m_Context.GetEngine().GetPlatform().Close();
 				}
 				ImGui::EndMenu();
 			}

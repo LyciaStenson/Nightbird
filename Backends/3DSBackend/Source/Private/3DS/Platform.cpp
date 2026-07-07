@@ -42,7 +42,12 @@ namespace Nightbird::N3DS
 
 	}
 
-	bool Platform::ShouldClose() const
+	void Platform::Close()
+	{
+
+	}
+
+	bool Platform::GetShouldClose() const
 	{
 		return !aptMainLoop();
 	}

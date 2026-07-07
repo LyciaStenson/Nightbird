@@ -11,14 +11,16 @@ namespace Nightbird::WiiU
 	{
 	public:
 		Platform();
-		virtual void Initialize(int width, int height, const char* name) override;
-		virtual void Shutdown() override;
-		virtual void Update() override;
-		virtual void WaitEvents() override;
-		virtual bool ShouldClose() const override;
-		virtual void GetFramebufferSize(int* width, int* height) const override;
 
-		virtual std::string GetCookedAssetsPath() const override;
+		void Initialize(int width, int height, const char* name) override;
+		void Shutdown() override;
+		void Update() override;
+		void WaitEvents() override;
+		void Close() override;
+		bool GetShouldClose() const override;
+		void GetFramebufferSize(int* width, int* height) const override;
+
+		std::string GetCookedAssetsPath() const override;
 
 		Input::Provider& GetInputProvider() override;
 		Audio::Provider& GetAudioProvider() override;

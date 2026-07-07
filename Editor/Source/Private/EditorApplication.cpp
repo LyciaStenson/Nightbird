@@ -167,7 +167,7 @@ namespace Nightbird::Editor
 
 	void EditorApplication::RunMainLoop()
 	{
-		while (!m_Platform->ShouldClose())
+		while (!m_Platform->GetShouldClose())
 		{
 			int width, height;
 			m_Platform->GetFramebufferSize(&width, &height);

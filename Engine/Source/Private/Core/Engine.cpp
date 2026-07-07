@@ -35,9 +35,9 @@ namespace Nightbird::Core
 		sink += nb_link_Skybox;
 	}
 	
-	bool Engine::ShouldClose() const
+	bool Engine::GetShouldClose() const
 	{
-		return m_Platform.ShouldClose();
+		return m_Platform.GetShouldClose();
 	}
 
 	void Engine::Update(float deltaTime)

@@ -58,7 +58,12 @@ namespace Nightbird::Glfw
 		glfwWaitEvents();
 	}
 
-	bool Platform::ShouldClose() const
+	void Platform::Close()
+	{
+		glfwSetWindowShouldClose(m_Window, GLFW_TRUE);
+	}
+
+	bool Platform::GetShouldClose() const
 	{
 		return glfwWindowShouldClose(m_Window);
 	}

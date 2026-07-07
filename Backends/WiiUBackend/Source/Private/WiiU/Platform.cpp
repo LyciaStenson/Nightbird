@@ -46,7 +46,12 @@ namespace Nightbird::WiiU
 
 	}
 
-	bool Platform::ShouldClose() const
+	void Platform::Close()
+	{
+
+	}
+
+	bool Platform::GetShouldClose() const
 	{
 		return !WHBProcIsRunning();
 	}

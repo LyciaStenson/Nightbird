@@ -19,7 +19,7 @@ namespace Nightbird::Core
 		Engine(Platform& platform, Renderer& renderer, AssetManager& assetManager);
 		~Engine() = default;
 
-		bool ShouldClose() const;
+		bool GetShouldClose() const;
 		void Update(float deltaTime);
 
 		Platform& GetPlatform();

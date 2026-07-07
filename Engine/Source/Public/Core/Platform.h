@@ -23,7 +23,8 @@ namespace Nightbird::Core
 		virtual void Shutdown() = 0;
 		virtual void Update() = 0;
 		virtual void WaitEvents() = 0;
-		virtual bool ShouldClose() const = 0;
+		virtual void Close() = 0;
+		virtual bool GetShouldClose() const = 0;
 		virtual void GetFramebufferSize(int* width, int* height) const = 0;
 
 		virtual std::string GetCookedAssetsPath() const = 0;

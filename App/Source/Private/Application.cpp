@@ -61,7 +61,7 @@ namespace Nightbird::App
 
 	void Application::RunMainLoop()
 	{
-		while (!m_Engine->ShouldClose())
+		while (!m_Engine->GetShouldClose())
 		{
 			int width, height;
 			m_Platform->GetFramebufferSize(&width, &height);

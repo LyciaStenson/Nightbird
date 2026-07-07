@@ -20,7 +20,8 @@ namespace Nightbird::Glfw
 		void Shutdown() override;
 		void Update() override;
 		void WaitEvents() override;
-		bool ShouldClose() const override;
+		void Close() override;
+		bool GetShouldClose() const override;
 		void GetFramebufferSize(int* width, int* height) const override;
 		
 		virtual std::string GetCookedAssetsPath() const override;
