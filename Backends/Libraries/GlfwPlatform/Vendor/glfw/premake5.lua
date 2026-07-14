@@ -77,6 +77,16 @@ project "glfw"
 			"_GLFW_COCOA"
 		}
 
+		links
+		{
+			"Cocoa.framework",
+			"CoreFoundation.framework",
+			"CoreGraphics.framework",
+			"CoreServices.framework",
+			"IOKit.framework",
+			"Carbon.framework"
+		}
+
 	filter "system:windows"
 		systemversion "latest"
 
