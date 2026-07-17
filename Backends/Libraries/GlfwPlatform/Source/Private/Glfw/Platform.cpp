@@ -24,6 +24,7 @@ namespace Nightbird::Glfw
 		glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 		m_Window = glfwCreateWindow(width, height, name, nullptr, nullptr);
 
+#ifdef _WIN32
 		std::filesystem::path iconPath = GetExeDir() / "Icon.png";
 		GLFWimage icon;
 		icon.pixels = stbi_load(iconPath.string().c_str(), &icon.width, &icon.height, 0, 4);
@@ -32,6 +33,7 @@ namespace Nightbird::Glfw
 			glfwSetWindowIcon(m_Window, 1, &icon);
 			stbi_image_free(icon.pixels);
 		}
+#endif
 
 		m_InputProvider = std::make_unique<InputProvider>(m_Window);
 
