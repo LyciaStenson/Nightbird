@@ -9,10 +9,6 @@ workspace "Nightbird"
 
 	defines { "TOML_COMPILER_HAS_EXCEPTIONS=0" }
 
-	filter { "platforms:Desktop" }
-		architecture "x86_64"
-	filter { }
-
 	filter { "system:windows" }
 		disablewarnings { "4251" }
 	
@@ -33,7 +29,7 @@ workspace "Nightbird"
 		defines { "NB_EDITOR_BUILD" }
 	filter { }
 
-	outputdir = "%{cfg.system}-%{cfg.architecture}/%{cfg.buildcfg}"
+	outputdir = "%{cfg.buildcfg}-%{cfg.system}"
 
 group "Dependencies"
 	include "Backends/Libraries/GlfwPlatform/Vendor/glfw"

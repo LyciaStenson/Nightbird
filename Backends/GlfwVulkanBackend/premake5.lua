@@ -6,6 +6,8 @@ project "GlfwVulkanBackend"
 	language "C++"
 	cppdialect "C++20"
 
+	disablewarnings { "invalid-offsetof" }
+
 	removeplatforms { "WiiU", "3DS" }
 
 	targetdir (outDir)

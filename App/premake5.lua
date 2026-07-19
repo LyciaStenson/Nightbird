@@ -3,6 +3,8 @@ project "App"
 	language "C++"
 	cppdialect "C++20"
 
+	disablewarnings { "invalid-offsetof" }
+
 	removeconfigurations { "EditorDebug", "EditorRelease" }
 
 	targetdir ("%{wks.location}/Binaries/" .. outputdir)

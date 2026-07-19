@@ -3,6 +3,8 @@ project "EditorGlfwVulkanBackend"
 	language "C++"
 	cppdialect "C++20"
 
+	disablewarnings { "invalid-offsetof" }
+
 	removeconfigurations { "AppDebug", "AppRelease" }
 	removeplatforms { "WiiU", "3DS" }
 

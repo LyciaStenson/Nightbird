@@ -15,10 +15,6 @@ workspace "%PROJECT_NAME%"
 	exceptionhandling "Off"
 	rtti "Off"
 
-	filter { "platforms:Desktop" }
-		architecture "x86_64"
-	filter { }
-	
 	filter { "system:windows" }
 		disablewarnings { "4251" }
 

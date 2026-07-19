@@ -3,6 +3,8 @@ project "3DSBackend"
 	language "C++"
 	cppdialect "C++20"
 
+	disablewarnings { "invalid-offsetof" }
+
 	removeconfigurations { "EditorDebug", "EditorRelease" }
 	removeplatforms { "Desktop", "WiiU" }
 

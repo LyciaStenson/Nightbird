@@ -13,6 +13,8 @@ project "Engine"
 		kind "StaticLib"
 	filter { }
 
+	disablewarnings { "invalid-offsetof" }
+
 	targetdir ("%{wks.location}/Binaries/" .. outputdir)
 	objdir ("%{wks.location}/Intermediate/" .. outputdir .. "/%{prj.name}")
 

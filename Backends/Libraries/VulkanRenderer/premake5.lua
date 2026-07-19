@@ -3,6 +3,8 @@ project "VulkanRenderer"
 	language "C++"
 	cppdialect "C++20"
 
+	disablewarnings { "invalid-offsetof" }
+
 	removeplatforms { "WiiU", "3DS" }
 
 	targetdir ("%{wks.location}/Binaries/" .. outputdir)
