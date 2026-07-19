@@ -7,9 +7,9 @@
 
 namespace Nightbird::Core
 {
-	struct Transform
+	struct Transform : public Object
 	{
-		NB_TYPE_BASE()
+		NB_TYPE()
 		
 		glm::mat4 GetLocalMatrix() const;
 

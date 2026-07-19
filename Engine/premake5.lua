@@ -5,6 +5,14 @@ project "Engine"
 
 	pic "On"
 
+	filter { "configuration:EditorDebug or EditorRelease" }
+		kind "SharedLib"
+	filter { }
+
+	filter { "configuration:AppDebug or AppRelease" }
+		kind "StaticLib"
+	filter { }
+
 	targetdir ("%{wks.location}/Binaries/" .. outputdir)
 	objdir ("%{wks.location}/Intermediate/" .. outputdir .. "/%{prj.name}")
 

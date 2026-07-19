@@ -4,6 +4,11 @@
 
 #include <filesystem>
 
+namespace Nightbird::Core
+{
+	class Object;
+}
+
 namespace Nightbird::Editor
 {
 	class EditorContext;

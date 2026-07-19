@@ -8,6 +8,16 @@ namespace Nightbird
 	struct TypeInfo;
 	struct FieldInfo;
 
+	namespace Core
+	{
+		class Object
+		{
+		public:
+			virtual ~Object() = default;
+			virtual const TypeInfo* GetTypeInfo() const noexcept = 0;
+		};
+	}
+
 	// FNV-1a hash
 	constexpr uint32_t FNVHash(std::string_view s) noexcept
 	{
@@ -24,9 +34,9 @@ namespace Nightbird
 
 		const TypeInfo* parent = nullptr;
 
-		using FactoryFn = void* (*)();
+		using FactoryFn = Core::Object* (*)();
 		FactoryFn factory = nullptr;
-
+		
 		const FieldInfo* fields = nullptr;
 		uint32_t fieldCount = 0;
 
@@ -40,7 +50,7 @@ namespace Nightbird
 			return false;
 		}
 
-		void* Create() const noexcept
+		Core::Object* Create() const noexcept
 		{
 			return factory ? factory() : nullptr;
 		}
@@ -60,7 +70,7 @@ namespace Nightbird
 		{
 			return fields != nullptr && fieldCount > 0;
 		}
-
+		
 		const FieldInfo* Begin() const noexcept;
 		const FieldInfo* End() const noexcept;
 	};

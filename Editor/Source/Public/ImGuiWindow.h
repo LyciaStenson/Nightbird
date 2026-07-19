@@ -16,10 +16,10 @@ namespace Nightbird::Editor
 		std::optional<ImVec2> padding;
 	};
 
-	class ImGuiWindow
+	class ImGuiWindow : public Core::Object
 	{
 	public:
-		NB_TYPE_BASE()
+		NB_TYPE()
 
 		ImGuiWindow(const std::string& title, bool open = true, const ImGuiWindowConfig& config = {});
 		virtual ~ImGuiWindow() = default;

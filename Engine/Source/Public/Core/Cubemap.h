@@ -6,10 +6,10 @@
 
 namespace Nightbird::Core
 {
-	class Cubemap
+	class Cubemap : public Object
 	{
 	public:
-		NB_TYPE_BASE()
+		NB_TYPE()
 		Cubemap(uint32_t faceSize, std::vector<uint8_t> data);
 
 		uint32_t GetFaceSize() const;

@@ -122,7 +122,7 @@ namespace Nightbird::Editor
 		writer.WriteUInt16(fieldCount);
 
 		// Fields
-		WriteFields(static_cast<void*>(object), object->GetTypeInfo(), writer);
+		WriteFields(object, object->GetTypeInfo(), writer);
 
 		// Do not serialize children of scene instance
 		if (object->HasSourceScene())

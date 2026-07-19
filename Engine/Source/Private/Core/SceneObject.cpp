@@ -33,6 +33,8 @@ namespace Nightbird::Core
 
 	void SceneObject::SetScene(Scene* scene)
 	{
+		Core::Log::Info("SetScene: this=" + std::to_string((uintptr_t)this) + " m_Children.size()=" + std::to_string(m_Children.size()));
+
 		m_Scene = scene;
 		for (auto& child : m_Children)
 			child->SetScene(scene);
@@ -75,11 +77,13 @@ namespace Nightbird::Core
 
 		m_Children.push_back(std::move(child));
 		
-		m_Children.back()->SetScene(m_Scene);
-		m_Children.back()->SetParent(this);
+		std::unique_ptr<SceneObject>& back = m_Children.back();
+
+		back->SetScene(m_Scene);
+		back->SetParent(this);
 
 		if (m_Scene && m_Scene->GetEngine())
-			m_Children.back()->EnterSceneRecursive();
+			back->EnterSceneRecursive();
 	}
 
 	std::unique_ptr<SceneObject> SceneObject::DetachChild(SceneObject* child)

@@ -4,20 +4,15 @@
 #include "Core/TypeRegistry.h"
 #include "Core/ReflectionInternal.h"
 
-#define NB_TYPE_BASE() \
-	public: \
-		static ::Nightbird::TypeInfo s_TypeInfo; \
-		virtual const ::Nightbird::TypeInfo* GetTypeInfo() const { return &s_TypeInfo; }
-
 #define NB_TYPE() \
 	public: \
 		static ::Nightbird::TypeInfo s_TypeInfo; \
-		const ::Nightbird::TypeInfo* GetTypeInfo() const override { return &s_TypeInfo; } \
+		const ::Nightbird::TypeInfo* GetTypeInfo() const noexcept override { return &s_TypeInfo; }
 
 #define NB_PARENT(T) &T::s_TypeInfo
 #define NB_NO_PARENT nullptr
 
-#define NB_FACTORY(T) ([]() -> void* { return new T(); })
+#define NB_FACTORY(T) ([]() -> ::Nightbird::Core::Object* { return new T(); })
 #define NB_NO_FACTORY nullptr
 
 #define NB_CONCAT_IMPL(a, b) a##b

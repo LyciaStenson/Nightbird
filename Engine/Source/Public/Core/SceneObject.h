@@ -15,13 +15,13 @@ namespace Nightbird::Core
 	class Engine;
 	class Scene;
 
-	class SceneObject
+	class SceneObject : public Object
 	{
 	public:
-		NB_TYPE_BASE()
+		NB_TYPE()
 
 		SceneObject();
-		virtual ~SceneObject() = default;
+		~SceneObject() override = default;
 
 		SceneObject(const SceneObject&) = delete;
 		SceneObject& operator=(const SceneObject&) = delete;
