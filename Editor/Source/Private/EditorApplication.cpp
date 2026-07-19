@@ -104,8 +104,6 @@ namespace Nightbird::Editor
 
 	int EditorApplication::InitializeProjectAndEditor()
 	{
-		Nightbird::TypeRegistry::InitReflection();
-		
 		m_ImportManager = std::make_unique<ImportManager>(m_ProjectConfig.path.parent_path() / "Assets");
 		m_Engine = std::make_unique<Core::Engine>(*m_Platform, *m_Renderer, *m_ImportManager);
 
