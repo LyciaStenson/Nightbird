@@ -81,7 +81,7 @@ namespace Nightbird::Editor
 
 		ImGui::Begin("##ProjectCreation", nullptr, flags);
 		ImGui::Text("Project Creation");
-		
+
 		ImGui::Dummy(ImVec2(0.0f, 15.0f));
 
 		ImGui::Text("Project Template:");
@@ -91,12 +91,12 @@ namespace Nightbird::Editor
 		static bool projectCreated = false;
 		if (projectCreated)
 			ImGui::BeginDisabled();
-		
+
 		const char* projectTemplates[] = { "Blank", "First Person", "Third Person" };
 		static int selectedTemplate = -1;
 
 		ImVec2 templateSize = ImVec2(110.0f, 120.0f);
-		
+
 		for (int i = 0; i < IM_ARRAYSIZE(projectTemplates); ++i)
 		{
 			bool isSelected = (selectedTemplate == i);
@@ -119,11 +119,11 @@ namespace Nightbird::Editor
 			
 			if (isSelected)
 				ImGui::PopStyleColor(3);
-			
+
 			if (i < IM_ARRAYSIZE(projectTemplates) - 1)
 				ImGui::SameLine();
 		}
-		
+
 		ImGui::Dummy(ImVec2(0.0f, 15.0f));
 
 		static char projectLocation[256] = "";
@@ -160,7 +160,7 @@ namespace Nightbird::Editor
 		{
 			std::filesystem::path projectPath = std::filesystem::path(projectLocation).make_preferred() / projectName;
 			std::filesystem::create_directories(projectPath);
-			
+
 			const char* envPath = std::getenv("NIGHTBIRD_PATH");
 			if (envPath)
 			{
@@ -188,7 +188,7 @@ namespace Nightbird::Editor
 
 					if (ec)
 					{
-						Core::Log::Error("Rename failed: " + ec.message());
+						Core::Log::Error("ProjectCreationUI: Rename failed: " + ec.message());
 					}
 				}
 
@@ -216,6 +216,10 @@ namespace Nightbird::Editor
 				
 				projectCreated = true;
 				projectJustCreated = true;
+			}
+			else
+			{
+				Core::Log::Warning("ProjectCreationUI: Failed to find NIGHTBIRD_PATH environment variable.");
 			}
 		}
 
