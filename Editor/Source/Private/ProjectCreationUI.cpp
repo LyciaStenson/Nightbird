@@ -179,7 +179,7 @@ namespace Nightbird::Editor
 					if (filename.find("%PROJECT_NAME%") == std::string::npos)
 						continue;
 					
-					ReplaceAll(filename, "%PROJECT_NAME%", projectName);
+					ReplaceAll("%PROJECT_NAME%", projectName, filename);
 					
 					std::filesystem::path newPath = path.parent_path() / filename;
 
@@ -201,12 +201,17 @@ namespace Nightbird::Editor
 					if (!in)
 						continue;
 					
-					std::string contents((std::istreambuf_iterator<char>(in)), std::istreambuf_iterator<char>());
+					std::string content((std::istreambuf_iterator<char>(in)), std::istreambuf_iterator<char>());
 
-					ReplaceAll(contents, "%PROJECT_NAME%", projectName);
+					ReplaceAll("%PROJECT_NAME%", projectName, content);
+
+					std::string projectNameUpper = projectName;
+					for (char& c : projectNameUpper)
+						c = static_cast<char>(std::toupper(static_cast<unsigned char>(c)));
+					ReplaceAll("%PROJECT_NAME_API%", projectNameUpper + "_API", content);
 
 					std::ofstream out(entry.path(), std::ios::binary | std::ios::trunc);
-					out.write(contents.data(), contents.size());
+					out.write(content.data(), content.size());
 				}
 				
 				projectCreated = true;
@@ -224,14 +229,13 @@ namespace Nightbird::Editor
 		ImGui::End();
 	}
 
-	void ProjectCreationUI::ReplaceAll(std::string& string, const std::string& from, const std::string& to)
+	void ProjectCreationUI::ReplaceAll(const std::string& placeholder, const std::string& replace, std::string& content)
 	{
 		size_t pos = 0;
-
-		while ((pos = string.find(from, pos)) != std::string::npos)
+		while ((pos = content.find(placeholder, pos)) != std::string::npos)
 		{
-			string.replace(pos, from.length(), to);
-			pos += to.length();
+			content.replace(pos, placeholder.length(), replace);
+			pos += replace.length();
 		}
 	}
 }

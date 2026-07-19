@@ -13,6 +13,6 @@ namespace Nightbird::Editor
 
 		void Render();
 
-		void ReplaceAll(std::string& string, const std::string& from, const std::string& to);
+		void ReplaceAll(const std::string& placeholder, const std::string& replace, std::string& content);
 	};
 }

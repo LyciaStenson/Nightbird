@@ -1,8 +1,10 @@
 #pragma once
 
+#include "%PROJECT_NAME%.h"
+
 #include "Core/SceneObject.h"
 
-class ExampleObject : public Nightbird::Core::SceneObject
+class %PROJECT_NAME_API% ExampleObject : public Nightbird::Core::SceneObject
 {
 public:
 	NB_TYPE()

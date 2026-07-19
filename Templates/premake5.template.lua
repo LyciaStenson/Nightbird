@@ -35,6 +35,10 @@ workspace "%PROJECT_NAME%"
 		runtime "Release"
 	filter { }
 
+	filter { "configurations:EditorDebug or EditorRelease" }
+		defines { "NB_EDITOR_BUILD" }
+	filter { }
+
 	outputdir = "%{cfg.system}-%{cfg.architecture}/%{cfg.buildcfg}"
 
 group "Nightbird"

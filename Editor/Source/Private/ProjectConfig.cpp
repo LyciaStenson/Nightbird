@@ -6,6 +6,8 @@
 
 #include <fstream>
 #include <sstream>
+#include <algorithm>
+#include <ctype.h>
 
 namespace Nightbird::Editor
 {
@@ -34,6 +36,16 @@ namespace Nightbird::Editor
 		return config;
 	}
 
+	void ReplaceAll(const std::string& placeholder, const std::string& replace, std::string& content)
+	{
+		size_t pos = 0;
+		while ((pos = content.find(placeholder, pos)) != std::string::npos)
+		{
+			content.replace(pos, placeholder.length(), replace);
+			pos += replace.size();
+		}
+	}
+
 	void GenerateProjectFile(const ProjectConfig& projectConfig, const std::filesystem::path& templatePath, const std::filesystem::path& outputPath)
 	{
 		if (!std::filesystem::exists(templatePath))
@@ -46,15 +58,9 @@ namespace Nightbird::Editor
 		std::stringstream buffer;
 		buffer << templateFile.rdbuf();
 		std::string fileContent = buffer.str();
-
-		size_t pos = 0;
-		const std::string placeholder = "%PROJECT_NAME%";
-		while ((pos = fileContent.find(placeholder, pos)) != std::string::npos)
-		{
-			fileContent.replace(pos, placeholder.length(), projectConfig.name);
-			pos += projectConfig.name.size();
-		}
-
+		
+		ReplaceAll("%PROJECT_NAME%", projectConfig.name, fileContent);
+		
 		std::ofstream outFile(outputPath);
 		outFile << fileContent;
 	}
