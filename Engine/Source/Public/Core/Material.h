@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Core/Api.h"
+
 #include <glm/glm.hpp>
 
 #include <memory>
@@ -8,7 +10,7 @@ namespace Nightbird::Core
 {
 	class Texture;
 
-	struct Material
+	struct NB_API Material
 	{
 		glm::vec4 baseColorFactor = glm::vec4(1.0f);
 		float metallicFactor = 1.0f;

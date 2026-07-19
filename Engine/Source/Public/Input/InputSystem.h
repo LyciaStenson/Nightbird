@@ -1,12 +1,14 @@
 #pragma once
 
+#include "Core/Api.h"
+
 #include "Input/InputState.h"
 
 namespace Nightbird::Input
 {
 	class Provider;
 
-	class System
+	class NB_API System
 	{
 	public:
 		System() = default;

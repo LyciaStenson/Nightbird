@@ -1,10 +1,12 @@
 #pragma once
 
+#include "Core/Api.h"
+
 #include <string>
 
 namespace Nightbird::Core
 {
-	class Log
+	class NB_API Log
 	{
 	public:
 		using LogFunc = void(*)(const std::string&);

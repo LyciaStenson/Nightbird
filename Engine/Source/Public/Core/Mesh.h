@@ -8,7 +8,7 @@
 
 namespace Nightbird::Core
 {
-	class Mesh : public Object
+	class NB_API Mesh : public Object
 	{
 	public:
 		NB_TYPE()

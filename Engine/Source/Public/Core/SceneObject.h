@@ -15,7 +15,7 @@ namespace Nightbird::Core
 	class Engine;
 	class Scene;
 
-	class SceneObject : public Object
+	class NB_API SceneObject : public Object
 	{
 	public:
 		NB_TYPE()

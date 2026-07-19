@@ -9,10 +9,6 @@ project "EditorGlfwPlatform"
 	targetdir ("%{wks.location}/Binaries/" .. outputdir)
 	objdir ("%{wks.location}/Intermediate/" .. outputdir .. "/%{prj.name}")
 
-	defines {
-		"NB_EDITOR_BUILD",
-	}
-
 	files {
 		"Source/Public/**.h",
 		"Source/Private/**.h",

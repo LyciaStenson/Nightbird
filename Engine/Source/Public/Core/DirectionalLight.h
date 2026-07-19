@@ -4,7 +4,7 @@
 
 namespace Nightbird::Core
 {
-	class DirectionalLight : public SpatialObject
+	class NB_API DirectionalLight : public SpatialObject
 	{
 	public:
 		NB_TYPE()

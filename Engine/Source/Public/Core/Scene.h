@@ -16,7 +16,7 @@ namespace Nightbird::Core
 	class SceneObject;
 	class Camera;
 
-	class Scene
+	class NB_API Scene
 	{
 	public:
 		Scene();

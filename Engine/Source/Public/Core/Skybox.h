@@ -6,7 +6,7 @@
 
 namespace Nightbird::Core
 {
-	class Skybox : public SceneObject
+	class NB_API Skybox : public SceneObject
 	{
 		NB_TYPE()
 		using SceneObject::SceneObject;

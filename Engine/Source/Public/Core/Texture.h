@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Core/Api.h"
+
 #include <cstdint>
 #include <vector>
 
@@ -11,7 +13,7 @@ namespace Nightbird::Core
 		T3X = 1
 	};
 
-	class Texture
+	class NB_API Texture
 	{
 	public:
 		Texture(uint32_t width, uint32_t height, TextureFormat format, std::vector<uint8_t> data);

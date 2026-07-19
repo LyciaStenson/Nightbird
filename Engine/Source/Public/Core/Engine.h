@@ -1,19 +1,21 @@
 #pragma once
 
-#include <memory>
+#include "Core/Api.h"
+#include "Core/Scene.h"
+#include "Core/AudioAsset.h"
+#include "Audio/AudioProvider.h"
 
 #include "Input/InputSystem.h"
-#include "Audio/AudioProvider.h"
-#include "Core/AudioAsset.h"
+
+#include <memory>
 
 namespace Nightbird::Core
 {
 	class Platform;
 	class Renderer;
-	class Scene;
 	class AssetManager;
 
-	class Engine
+	class NB_API Engine
 	{
 	public:
 		Engine(Platform& platform, Renderer& renderer, AssetManager& assetManager);

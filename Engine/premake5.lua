@@ -30,6 +30,4 @@ project "Engine"
 		"Vendor/stduuid"
 	}
 
-	filter { "configurations:EditorDebug or EditorRelease" }
-		defines { "NB_EDITOR_BUILD" }
-	filter { }
+	defines { "NB_ENGINE_BUILD" }

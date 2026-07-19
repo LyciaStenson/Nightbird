@@ -36,8 +36,6 @@ project "Editor"
 		"%{wks.location}/Engine/Vendor/stduuid"
 	}
 
-	defines { "NB_EDITOR_BUILD" }
-
 	postbuildcommands {
 		'{COPYFILE} "' .. 'Assets/Icon.png" "' .. outBinDir .. '/Icon.png"'
 	}

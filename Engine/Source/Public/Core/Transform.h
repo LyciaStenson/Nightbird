@@ -7,7 +7,7 @@
 
 namespace Nightbird::Core
 {
-	struct Transform : public Object
+	struct NB_API Transform : public Object
 	{
 		NB_TYPE()
 		

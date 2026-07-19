@@ -4,7 +4,7 @@
 
 namespace Nightbird::Core
 {
-	class AmbientLight : public SceneObject
+	class NB_API AmbientLight : public SceneObject
 	{
 	public:
 		NB_TYPE()

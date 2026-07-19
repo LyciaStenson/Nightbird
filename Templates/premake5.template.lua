@@ -18,6 +18,9 @@ workspace "%PROJECT_NAME%"
 	filter { "platforms:Desktop" }
 		architecture "x86_64"
 	filter { }
+	
+	filter { "system:windows" }
+		disablewarnings { "4251" }
 
 	filter { "configurations:EditorDebug or AppDebug" }
 		defines { "DEBUG" }

@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Core/Api.h"
+
 #include <cstdint>
 #include <string_view>
 
@@ -10,7 +12,7 @@ namespace Nightbird
 
 	namespace Core
 	{
-		class Object
+		class NB_API Object
 		{
 		public:
 			virtual ~Object() = default;
@@ -27,7 +29,7 @@ namespace Nightbird
 		return h;
 	}
 	
-	struct TypeInfo
+	struct NB_API TypeInfo
 	{
 		const char* name = nullptr;
 		uint32_t nameHash = 0;

@@ -6,7 +6,7 @@
 
 namespace Nightbird::Core
 {
-	class MeshInstance : public SpatialObject
+	class NB_API MeshInstance : public SpatialObject
 	{
 	public:
 		NB_TYPE()

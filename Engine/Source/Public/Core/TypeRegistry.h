@@ -11,9 +11,9 @@ namespace Nightbird
 	using ProjectInitFn = void(*)(RegisterTypeFn registerType);
 
 	using ReflectionApplyFn = void(*)();
-	void RegisterReflectionApply(ReflectionApplyFn fn) noexcept;
+	void NB_API RegisterReflectionApply(ReflectionApplyFn fn) noexcept;
 
-	class TypeRegistry
+	class NB_API TypeRegistry
 	{
 	public:
 		static void InitReflection() noexcept;

@@ -8,7 +8,7 @@ namespace Nightbird::Core
 {
 	class AudioAsset;
 
-	class AudioSource : public SceneObject
+	class NB_API AudioSource : public SceneObject
 	{
 	public:
 		NB_TYPE()

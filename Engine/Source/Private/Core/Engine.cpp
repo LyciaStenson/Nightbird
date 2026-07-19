@@ -2,7 +2,6 @@
 
 #include "Core/Platform.h"
 #include "Core/Renderer.h"
-#include "Core/Scene.h"
 #include "Core/SceneObject.h"
 #include "Core/AssetManager.h"
 #include "Core/Log.h"

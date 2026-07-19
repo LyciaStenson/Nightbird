@@ -13,7 +13,7 @@ namespace Nightbird::Core
 		DSP_ADPCM = 1
 	};
 
-	class AudioAsset : public Object
+	class NB_API AudioAsset : public Object
 	{
 	public:
 		NB_TYPE()

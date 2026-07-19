@@ -5,7 +5,7 @@
 
 namespace Nightbird::Core
 {
-	class SpatialObject : public SceneObject
+	class NB_API SpatialObject : public SceneObject
 	{
 	public:
 		NB_TYPE()

@@ -13,6 +13,9 @@ workspace "Nightbird"
 		architecture "x86_64"
 	filter { }
 
+	filter { "system:windows" }
+		disablewarnings { "4251" }
+	
 	filter { "configurations:EditorDebug or AppDebug" }
 		defines { "DEBUG" }
 		symbols "On"
@@ -24,6 +27,10 @@ workspace "Nightbird"
 		defines { "NDEBUG" }
 		optimize "On"
 		runtime "Release"
+	filter { }
+
+	filter { "configurations:EditorDebug or EditorRelease" }
+		defines { "NB_EDITOR_BUILD" }
 	filter { }
 
 	outputdir = "%{cfg.system}-%{cfg.architecture}/%{cfg.buildcfg}"

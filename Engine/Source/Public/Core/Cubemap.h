@@ -6,7 +6,7 @@
 
 namespace Nightbird::Core
 {
-	class Cubemap : public Object
+	class NB_API Cubemap : public Object
 	{
 	public:
 		NB_TYPE()

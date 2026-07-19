@@ -6,7 +6,7 @@
 
 namespace Nightbird::Core
 {
-	class Camera : public SpatialObject
+	class NB_API Camera : public SpatialObject
 	{
 	public:
 		NB_TYPE()

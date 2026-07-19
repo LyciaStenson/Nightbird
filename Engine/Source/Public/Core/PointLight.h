@@ -4,7 +4,7 @@
 
 namespace Nightbird::Core
 {
-	class PointLight : public SpatialObject
+	class NB_API PointLight : public SpatialObject
 	{
 	public:
 		NB_TYPE()

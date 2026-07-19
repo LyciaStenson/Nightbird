@@ -8,7 +8,7 @@
 
 namespace Nightbird::Core
 {
-	class MeshPrimitive
+	class NB_API MeshPrimitive
 	{
 	public:
 		MeshPrimitive(std::vector<Vertex> vertices, std::vector<uint16_t> indices, std::shared_ptr<Material> material);
