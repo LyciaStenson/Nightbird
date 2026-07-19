@@ -35,4 +35,4 @@ project "EditorGlfwPlatform"
 		"%{wks.location}/Backends/Libraries/VulkanRenderer/Vendor/vulkan-headers/include"
 	}
 
-	links { "GlfwPlatform", "GLFW", "imgui" }
+	links { "GlfwPlatform", "glfw", "imgui" }

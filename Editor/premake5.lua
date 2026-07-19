@@ -43,5 +43,9 @@ project "Editor"
 	}
 
 	filter { "configurations:EditorDebug or EditorRelease" }
-		links { "EditorGlfwVulkanBackend", "EditorGlfwPlatform", "EditorVulkanRenderer", "GlfwVulkanBackend", "GlfwPlatform", "VulkanRenderer", "GLFW", "imgui", "fastgltf", "Engine" }
+		links { "EditorGlfwVulkanBackend", "EditorGlfwPlatform", "EditorVulkanRenderer", "GlfwVulkanBackend", "GlfwPlatform", "VulkanRenderer", "glfw", "imgui", "fastgltf", "Engine" }
+	filter { }
+
+	filter { "system:macosx" }
+		links { "Cocoa.framework", "IOKit.framework", "CoreFoundation.framework", "QuartzCore.framework" }
 	filter { }
