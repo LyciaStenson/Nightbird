@@ -80,11 +80,10 @@ project "glfw"
 		links
 		{
 			"Cocoa.framework",
-			"CoreFoundation.framework",
-			"CoreGraphics.framework",
-			"CoreServices.framework",
 			"IOKit.framework",
-			"Carbon.framework"
+			"CoreFoundation.framework",
+			"CoreVideo.framework",
+			"CoreGraphics.framework"
 		}
 
 	filter "system:windows"

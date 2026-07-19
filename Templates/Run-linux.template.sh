@@ -16,7 +16,7 @@ if [[ -z "$NIGHTBIRD_PATH" ]]; then
 	exit 1
 fi
 
-ENGINE_BINARIES="$NIGHTBIRD_PATH/Binaries/linux-x86_64/$CONFIG_DIR"
+ENGINE_BINARIES="$NIGHTBIRD_PATH/Binaries/$CONFIG_DIR-linux"
 
 NPROJECT_FILE=$(find "$(pwd)" -maxdepth 1 -name "*.nproject" -print -quit)
 
