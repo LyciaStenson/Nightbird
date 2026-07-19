@@ -5,11 +5,11 @@ project "Engine"
 
 	pic "On"
 
-	filter { "configuration:EditorDebug or EditorRelease" }
+	filter { "configurations:EditorDebug or EditorRelease" }
 		kind "SharedLib"
 	filter { }
 
-	filter { "configuration:AppDebug or AppRelease" }
+	filter { "configurations:AppDebug or AppRelease" }
 		kind "StaticLib"
 	filter { }
 
