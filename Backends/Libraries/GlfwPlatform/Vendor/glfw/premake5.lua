@@ -82,8 +82,7 @@ project "glfw"
 			"Cocoa.framework",
 			"IOKit.framework",
 			"CoreFoundation.framework",
-			"CoreVideo.framework",
-			"CoreGraphics.framework"
+			"QuartzCore.framework"
 		}
 
 	filter "system:windows"
