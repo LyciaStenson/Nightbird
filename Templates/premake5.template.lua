@@ -17,6 +17,7 @@ workspace "%PROJECT_NAME%"
 
 	filter { "system:windows" }
 		disablewarnings { "4251" }
+	filter { }
 
 	filter { "configurations:EditorDebug or AppDebug" }
 		defines { "DEBUG" }

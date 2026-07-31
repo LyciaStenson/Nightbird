@@ -3,7 +3,9 @@ project "VulkanRenderer"
 	language "C++"
 	cppdialect "C++20"
 
-	disablewarnings { "invalid-offsetof" }
+	filter { "action:gmake*" }
+		disablewarnings { "invalid-offsetof" }
+	filter { }
 
 	removeplatforms { "WiiU", "3DS" }
 

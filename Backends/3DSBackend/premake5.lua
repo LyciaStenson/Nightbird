@@ -3,7 +3,9 @@ project "3DSBackend"
 	language "C++"
 	cppdialect "C++20"
 
-	disablewarnings { "invalid-offsetof" }
+	filter { "action:gmake*" }
+		disablewarnings { "invalid-offsetof" }
+	filter { }
 
 	removeconfigurations { "EditorDebug", "EditorRelease" }
 	removeplatforms { "Desktop", "WiiU" }

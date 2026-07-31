@@ -3,7 +3,9 @@ project "EditorGlfwPlatform"
 	language "C++"
 	cppdialect "C++20"
 
-	disablewarnings { "invalid-offsetof" }
+	filter { "action:gmake*" }
+		disablewarnings { "invalid-offsetof" }
+	filter { }
 
 	removeconfigurations { "AppDebug", "AppRelease" }
 	removeplatforms { "WiiU", "3DS" }

@@ -13,7 +13,9 @@ project "Engine"
 		kind "StaticLib"
 	filter { }
 
-	disablewarnings { "invalid-offsetof" }
+	filter { "action:gmake*" }
+		disablewarnings { "invalid-offsetof" }
+	filter { }
 
 	targetdir ("%{wks.location}/Binaries/" .. outputdir)
 	objdir ("%{wks.location}/Intermediate/" .. outputdir .. "/%{prj.name}")
