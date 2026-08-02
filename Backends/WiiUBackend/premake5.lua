@@ -8,7 +8,7 @@ project "WiiUBackend"
 	filter { }
 
 	removeconfigurations { "EditorDebug", "EditorRelease" }
-	removeplatforms { "Desktop", "3DS" }
+	removeplatforms { "x64", "x86", "ARM64", "3DS" }
 
 	targetdir ("%{wks.location}/Binaries/" .. outputdir)
 	objdir ("%{wks.location}/Intermediate/" .. outputdir .. "/%{prj.name}")
@@ -33,7 +33,7 @@ project "WiiUBackend"
 	
 	links { "Engine" }
 	
-	filter { "platforms:Desktop" }
+	filter { "platforms:x64 or x86 or ARM64" }
 		removefiles {
 			"Source/Private/**.cpp"
 		}

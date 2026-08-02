@@ -8,8 +8,8 @@ end
 
 workspace "%PROJECT_NAME%"
 	configurations { "EditorDebug", "EditorRelease", "AppDebug", "AppRelease" }
-	platforms { "Desktop", "WiiU", "3DS" }
-	defaultplatform "Desktop"
+	platforms { "x64", "x86", "ARM64", "WiiU", "3DS" }
+	defaultplatform "x64"
 	startproject "Editor"
 
 	exceptionhandling "Off"
@@ -155,7 +155,7 @@ project "%PROJECT_NAME%"
 		defines { "NB_EDITOR_BUILD" }
 	filter { }
 
-	filter { "configurations:AppDebug or AppRelease", "platforms:Desktop" }
+	filter { "configurations:AppDebug or AppRelease", "platforms:x64 or x86 or ARM64" }
 		links { "App", "GlfwVulkanBackend", "GlfwPlatform", "VulkanRenderer", "glfw", "Engine" }
 
 		local engineBinaries = enginePath .. "Binaries/%{cfg.system}-%{cfg.architecture}/%{cfg.buildcfg}/"

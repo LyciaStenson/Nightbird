@@ -1,7 +1,7 @@
 workspace "Nightbird"
 	configurations { "EditorDebug", "EditorRelease", "AppDebug", "AppRelease" }
-	platforms { "Desktop", "WiiU", "3DS" }
-	defaultplatform "Desktop"
+	platforms { "x64", "x86", "ARM64", "WiiU", "3DS" }
+	defaultplatform "x64"
 	startproject "Editor"
 
 	exceptionhandling "Off"
@@ -13,6 +13,18 @@ workspace "Nightbird"
 		disablewarnings { "4251" }
 	filter {  }
 
+	filter { "platforms:x64" }
+		architecture "x86_64"
+	filter { }
+
+	filter { "platforms:x64" }
+		architecture "x86"
+	filter { }
+
+	filter { "platforms:ARM64" }
+		architecture "ARM64"
+	filter { }
+	
 	filter { "configurations:EditorDebug or AppDebug" }
 		defines { "DEBUG" }
 		symbols "On"

@@ -77,7 +77,8 @@ namespace Nightbird::Editor
 	ImTextureID VulkanImGuiRenderer::RegisterSurface(Core::RenderSurface& surface)
 	{
 		auto& vulkanSurface = static_cast<Vulkan::OffscreenSurface&>(surface);
-		return reinterpret_cast<ImTextureID>(ImGui_ImplVulkan_AddTexture(vulkanSurface.GetColorTexture().GetSampler(), vulkanSurface.GetColorTexture().GetImageView(), VK_IMAGE_LAYOUT_READ_ONLY_OPTIMAL));
+		VkDescriptorSet descriptorSet = ImGui_ImplVulkan_AddTexture(vulkanSurface.GetColorTexture().GetSampler(), vulkanSurface.GetColorTexture().GetImageView(), VK_IMAGE_LAYOUT_READ_ONLY_OPTIMAL);
+		return std::bit_cast<ImTextureID>(descriptorSet);
 	}
 	
 	void VulkanImGuiRenderer::UnregisterSurface(Core::RenderSurface& surface)
