@@ -17,7 +17,7 @@ workspace "Nightbird"
 		architecture "x86_64"
 	filter { }
 
-	filter { "platforms:x64" }
+	filter { "platforms:x86" }
 		architecture "x86"
 	filter { }
 
@@ -42,7 +42,7 @@ workspace "Nightbird"
 		defines { "NB_EDITOR_BUILD" }
 	filter { }
 
-	outputdir = "%{cfg.buildcfg}-%{cfg.system}"
+	outputdir = "%{cfg.system}-%{cfg.platform}/%{cfg.buildcfg}"
 
 group "Dependencies"
 	include "Backends/Libraries/GlfwPlatform/Vendor/glfw"

@@ -36,7 +36,7 @@ workspace "%PROJECT_NAME%"
 		defines { "NB_EDITOR_BUILD" }
 	filter { }
 
-	outputdir = "%{cfg.buildcfg}-%{cfg.system}"
+	outputdir = "%{cfg.system}-%{cfg.platform}/%{cfg.buildcfg}"
 
 group "Nightbird"
 
