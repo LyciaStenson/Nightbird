@@ -8,7 +8,7 @@ end
 
 workspace "%PROJECT_NAME%"
 	configurations { "EditorDebug", "EditorRelease", "AppDebug", "AppRelease" }
-	platforms { "x64", "x86", "ARM64", "WiiU", "3DS" }
+	platforms { "x64", "x86", "ARM64" }
 	defaultplatform "x64"
 	startproject "Editor"
 
@@ -71,7 +71,6 @@ project "Editor"
 	kind "None"
 
 	removeconfigurations { "AppDebug", "AppRelease" }
-	removeplatforms { "WiiU", "3DS" }
 
 	targetdir ("%{wks.location}/Binaries/" .. outputdir)
 	objdir ("%{wks.location}/Intermediate/" .. outputdir)
@@ -168,12 +167,4 @@ project "%PROJECT_NAME%"
 			'{COPYFILE} "' .. engineBinaries .. 'Skybox.vert.spv" "' .. projectBinaries .. 'Skybox.vert.spv"',
 			'{COPYFILE} "' .. engineBinaries .. 'Skybox.frag.spv" "' .. projectBinaries .. 'Skybox.frag.spv"'
 		}
-	filter { }
-
-	filter { "configurations:AppDebug or AppRelease", "platforms:WiiU" }
-		links { "App", "WiiUBackend", "Engine" }
-	filter { }
-
-	filter { "configurations:AppDebug or AppRelease", "platforms:3DS" }
-		links { "App", "3DSBackend", "Engine" }
 	filter { }

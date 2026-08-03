@@ -1,6 +1,6 @@
 workspace "Nightbird"
 	configurations { "EditorDebug", "EditorRelease", "AppDebug", "AppRelease" }
-	platforms { "x64", "x86", "ARM64", "WiiU", "3DS" }
+	platforms { "x64", "x86", "ARM64" }
 	defaultplatform "x64"
 	startproject "Editor"
 

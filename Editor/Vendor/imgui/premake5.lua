@@ -4,7 +4,6 @@ project "imgui"
 	cppdialect "C++20"
 
 	removeconfigurations { "AppDebug", "AppRelease" }
-	removeplatforms { "WiiU", "3DS" }
 
 	targetdir ("%{wks.location}/Intermediate/" .. outputdir)
 	objdir ("%{wks.location}/Intermediate/" .. outputdir .. "/imgui")

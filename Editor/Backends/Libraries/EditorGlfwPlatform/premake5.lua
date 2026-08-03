@@ -8,7 +8,6 @@ project "EditorGlfwPlatform"
 	filter { }
 
 	removeconfigurations { "AppDebug", "AppRelease" }
-	removeplatforms { "WiiU", "3DS" }
 
 	targetdir ("%{wks.location}/Binaries/" .. outputdir)
 	objdir ("%{wks.location}/Intermediate/" .. outputdir .. "/%{prj.name}")

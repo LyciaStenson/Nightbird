@@ -10,8 +10,6 @@ project "GlfwVulkanBackend"
 		disablewarnings { "invalid-offsetof" }
 	filter { }
 
-	removeplatforms { "WiiU", "3DS" }
-
 	targetdir (outDir)
 	objdir ("%{wks.location}/Intermediate/" .. outputdir .. "/%{prj.name}")
 

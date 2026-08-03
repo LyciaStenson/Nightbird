@@ -8,7 +8,6 @@ project "Editor"
 	filter { }
 
 	removeconfigurations { "AppDebug", "AppRelease" }
-	removeplatforms { "WiiU", "3DS" }
 
 	local outBinDir = "%{wks.location}/Binaries/" .. outputdir
 

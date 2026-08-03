@@ -1,20 +1,16 @@
 project "WiiUBackend"
-	kind "StaticLib"
 	language "C++"
 	cppdialect "C++20"
+	excludefrombuild "On"
 
-	filter { "action:gmake*" }
-		disablewarnings { "invalid-offsetof" }
+	filter "system:windows"
+		kind "StaticLib"
 	filter { }
 
-	removeconfigurations { "EditorDebug", "EditorRelease" }
-	removeplatforms { "x64", "x86", "ARM64", "3DS" }
+	filter "system:not windows"
+		kind "None"
+	filter { }
 
-	targetdir ("%{wks.location}/Binaries/" .. outputdir)
-	objdir ("%{wks.location}/Intermediate/" .. outputdir .. "/%{prj.name}")
-
-	defines { }
-	
 	files {
 		"Source/Public/**.h",
 		"Source/Private/**.h",
@@ -30,11 +26,3 @@ project "WiiUBackend"
 		"%{wks.location}/Engine/Vendor/stduuid",
 		"C:/devkitPro/wut/include"
 	}
-	
-	links { "Engine" }
-	
-	filter { "platforms:x64 or x86 or ARM64" }
-		removefiles {
-			"Source/Private/**.cpp"
-		}
-	filter { }

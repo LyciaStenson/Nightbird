@@ -7,8 +7,6 @@ project "GlfwPlatform"
 		disablewarnings { "invalid-offsetof" }
 	filter { }
 
-	removeplatforms { "WiiU", "3DS" }
-
 	targetdir ("%{wks.location}/Binaries/" .. outputdir)
 	objdir ("%{wks.location}/Intermediate/" .. outputdir .. "/%{prj.name}")
 
