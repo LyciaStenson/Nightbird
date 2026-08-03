@@ -24,7 +24,7 @@ workspace "Nightbird"
 	filter { "platforms:ARM64" }
 		architecture "ARM64"
 	filter { }
-	
+
 	filter { "configurations:EditorDebug or AppDebug" }
 		defines { "DEBUG" }
 		symbols "On"

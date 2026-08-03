@@ -41,7 +41,7 @@ namespace Nightbird::Editor
 
 		enum class State
 		{
-			ProjectSelection, Editing
+			ProjectCreation, Editing
 		};
 
 	private:
@@ -74,7 +74,7 @@ namespace Nightbird::Editor
 		EditorSettings m_EditorSettings;
 		ProjectSettings m_ProjectSettings;
 
-		State m_State = State::ProjectSelection;
+		State m_State = State::ProjectCreation;
 
 		ProjectConfig m_ProjectConfig;
 		bool m_ProjectLoaded = false;

@@ -100,7 +100,7 @@ Section "Nightbird Engine" SecNightbird
   WriteRegStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Nightbird" "InstallLocation" "$INSTDIR"
   WriteRegStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Nightbird" "Publisher" "Nightbird Labs"
   WriteRegStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Nightbird" "DisplayVersion" "0.1.0"
-  WriteRegStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Nightbird" "DisplayIcon" "$INSTDIR\Binaries\windows-x86_64\EditorRelease\Editor.exe"
+  WriteRegStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Nightbird" "DisplayIcon" "$INSTDIR\Binaries\windows-x64\EditorRelease\Editor.exe"
   WriteRegDWORD HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Nightbird" "NoModify" 1
   WriteRegDWORD HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Nightbird" "NoRepair" 1
 
@@ -108,7 +108,7 @@ Section "Nightbird Engine" SecNightbird
     CreateDirectory "$SMPROGRAMS\$StartMenuFolder"
 
     ; Create shortcuts
-    CreateShortcut "$SMPROGRAMS\$StartMenuFolder\Nightbird Editor.lnk" "$INSTDIR\Binaries\windows-x86_64\EditorRelease\Editor.exe"
+    CreateShortcut "$SMPROGRAMS\$StartMenuFolder\Nightbird Editor.lnk" "$INSTDIR\Binaries\windows-x64\EditorRelease\Editor.exe"
 
   !insertmacro MUI_STARTMENU_WRITE_END
 

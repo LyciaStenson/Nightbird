@@ -22,7 +22,7 @@ if /i "%CONFIG%"=="editordebug" (
 )
 
 :: Build path
-set ENGINE_BINARIES=%NIGHTBIRD_PATH%\Binaries\windows-x86_64\%CONFIG_DIR%
+set ENGINE_BINARIES=%NIGHTBIRD_PATH%\Binaries\windows-x64\%CONFIG_DIR%
 
 set PROJECT_DIR=%cd%
 

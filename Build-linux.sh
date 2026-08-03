@@ -1,7 +1,7 @@
 #!/bin/bash
 
 CONFIG=${1:-editordebug}
-PLATFORM=${2:-desktop}
+PLATFORM=${2:-x64}
 
 echo "Building Linux project files."
 premake5 gmake

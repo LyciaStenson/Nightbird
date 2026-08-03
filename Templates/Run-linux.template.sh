@@ -1,7 +1,7 @@
 #!/bin/bash
 
 CONFIG=${1:-editordebug}
-PLATFORM=${2:-desktop}
+PLATFORM=${2:-x64}
 
 case "$CONFIG" in
 	editordebug)    CONFIG_DIR="EditorDebug"    ;;
@@ -16,7 +16,7 @@ if [[ -z "$NIGHTBIRD_PATH" ]]; then
 	exit 1
 fi
 
-ENGINE_BINARIES="$NIGHTBIRD_PATH/Binaries/$CONFIG_DIR-linux"
+ENGINE_BINARIES="$NIGHTBIRD_PATH/Binaries/linux-x64/$CONFIG_DIR"
 
 NPROJECT_FILE=$(find "$(pwd)" -maxdepth 1 -name "*.nproject" -print -quit)
 

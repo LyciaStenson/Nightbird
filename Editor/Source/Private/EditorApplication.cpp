@@ -35,7 +35,7 @@ namespace Nightbird::Editor
 		{
 			InitializeBackend(540, 640, "Nightbird Editor 0.1.0 | Project Creation");
 			InitializeProjectCreationUI();
-			m_State = State::ProjectSelection;
+			m_State = State::ProjectCreation;
 		}
 		else
 		{
@@ -184,7 +184,7 @@ namespace Nightbird::Editor
 			Render();
 		}
 	}
-	
+
 	void EditorApplication::Render()
 	{
 		auto& surface = m_Renderer->GetDefaultSurface();
@@ -195,7 +195,7 @@ namespace Nightbird::Editor
 
 		if (m_State == State::Editing)
 			m_EditorUI->Render();
-		else if (m_State == State::ProjectSelection)
+		else if (m_State == State::ProjectCreation)
 			m_ProjectCreationUI->Render();
 		
 		m_EditorUIBackend->EndFrame();
@@ -220,14 +220,17 @@ namespace Nightbird::Editor
 			return 1;
 		}
 
-		// EDITORDEBUG ONLY
+#ifdef NDEBUG
+		std::string configStr = "EditorRelease";
+#else
 		std::string configStr = "EditorDebug";
+#endif
 
 		std::string platformStr;
 #ifdef _WIN32
-		platformStr = "windows-x86_64";
+		platformStr = "windows-x64";
 #else
-		platformStr = "linux-x86_64";
+		platformStr = "linux-x64";
 #endif
 
 		std::string libraryStr;

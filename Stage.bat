@@ -34,7 +34,7 @@ if !ERRORLEVEL! NEQ 0 (
 
 echo Copying Debug Windows Binaries (keeping .pdb)
 for %%C in (AppDebug EditorDebug) do (
-	robocopy "%SRC%\Binaries\windows-x86_64\%%C" "%DST%\Binaries\windows-x86_64\%%C" /E ^
+	robocopy "%SRC%\Binaries\windows-x64\%%C" "%DST%\Binaries\windows-x64\%%C" /E ^
 		/XD .vs obj ^
 		/XF *.idb *.exp *.ilk
 	if !ERRORLEVEL! GEQ 8 (
@@ -45,7 +45,7 @@ for %%C in (AppDebug EditorDebug) do (
 
 echo Copying Release Windows Binaries (stripping .pdb)
 for %%C in (AppRelease EditorRelease) do (
-	robocopy "%SRC%\Binaries\windows-x86_64\%%C" "%DST%\Binaries\windows-x86_64\%%C" /E ^
+	robocopy "%SRC%\Binaries\windows-x64\%%C" "%DST%\Binaries\windows-x64\%%C" /E ^
 		/XD .vs obj ^
 		/XF *.idb *.exp *.ilk *.pdb
 	if !ERRORLEVEL! GEQ 8 (
