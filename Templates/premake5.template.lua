@@ -157,11 +157,11 @@ project "%PROJECT_NAME%"
 	filter { "configurations:AppDebug or AppRelease", "platforms:x64 or x86 or ARM64" }
 		links { "App", "GlfwVulkanBackend", "GlfwPlatform", "VulkanRenderer", "glfw", "Engine" }
 
-		local engineBinaries = enginePath .. "Binaries/%{cfg.system}-%{cfg.architecture}/%{cfg.buildcfg}/"
-		local projectBinaries = "%{wks.location}/Binaries/%{cfg.system}-%{cfg.architecture}/%{cfg.buildcfg}/"
+		local engineBinaries = enginePath .. "Binaries/%{cfg.system}-%{cfg.platform}/%{cfg.buildcfg}/"
+		local projectBinaries = "%{wks.location}/Binaries/%{cfg.system}-%{cfg.platform}/%{cfg.buildcfg}/"
 
 		postbuildcommands {
-			'{COPYFILE} "' .. enginePath .. 'Editor/Assets/Icon.png" "' .. projectBinaries .. 'Icon.png"',
+			'{COPYFILE} "' .. 'Icon.png" "' .. outBinDir .. '/Icon.png"',
 			'{COPYFILE} "' .. engineBinaries .. 'Pbr.vert.spv" "' .. projectBinaries .. 'Pbr.vert.spv"',
 			'{COPYFILE} "' .. engineBinaries .. 'Pbr.frag.spv" "' .. projectBinaries .. 'Pbr.frag.spv"',
 			'{COPYFILE} "' .. engineBinaries .. 'Skybox.vert.spv" "' .. projectBinaries .. 'Skybox.vert.spv"',
