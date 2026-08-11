@@ -31,8 +31,7 @@ namespace Nightbird::Editor
 		}
 
 		toml::table& document = tomlResult.table();
-
-		std::string sceneName = document["scene"]["name"].value_or(std::string{});
+		
 		std::string sceneUUIDString = document["scene"]["uuid"].value_or(std::string{});
 		auto sceneUUID = uuids::uuid::from_string(sceneUUIDString);
 		if (!sceneUUID)
@@ -133,7 +132,7 @@ namespace Nightbird::Editor
 		if (activeCameraUUID && nodeMap.count(*activeCameraUUID))
 			result.activeCamera = Cast<Core::Camera>(nodeMap[*activeCameraUUID]);
 
-		Core::Log::Info("TextSceneReader: Loaded scene: " + sceneName);
+		Core::Log::Info("TextSceneReader: Loaded scene: " + path.string());
 		return result;
 	}
 

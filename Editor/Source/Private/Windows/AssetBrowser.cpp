@@ -155,7 +155,7 @@ namespace Nightbird::Editor
 			{
 				TextSceneWriter writer;
 				Core::Scene scene;
-				writer.Write(scene, "NewScene", GenerateUUID(), m_Context.m_CurrentPath / "NewScene.ntscene");
+				writer.Write(scene, GenerateUUID(), m_Context.m_CurrentPath / "NewScene.ntscene");
 			}
 
 			if (ImGui::MenuItem("New Cubemap"))

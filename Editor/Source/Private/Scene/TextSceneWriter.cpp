@@ -9,8 +9,7 @@
 
 namespace Nightbird::Editor
 {
-	void TextSceneWriter::Write(Core::Scene& scene, const std::string& sceneName,
-		const uuids::uuid& sceneUUID, const std::filesystem::path& outputPath)
+	void TextSceneWriter::Write(Core::Scene& scene, const uuids::uuid& sceneUUID, const std::filesystem::path& outputPath)
 	{
 		m_NodeUUIDs.clear();
 
@@ -19,7 +18,6 @@ namespace Nightbird::Editor
 		toml::table document;
 
 		toml::table sceneTable;
-		sceneTable.insert("name", sceneName);
 		sceneTable.insert("uuid", uuids::to_string(sceneUUID));
 		const Core::Camera* activeCamera = scene.GetActiveCamera();
 		sceneTable.insert("active_camera", activeCamera ? uuids::to_string(m_NodeUUIDs[activeCamera]) : std::string{});

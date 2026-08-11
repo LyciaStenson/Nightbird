@@ -20,8 +20,7 @@ namespace Nightbird::Editor
 	class TextSceneWriter
 	{
 	public:
-		void Write(Core::Scene& scene, const std::string& sceneName,
-			const uuids::uuid& sceneUUID, const std::filesystem::path& outputPath);
+		void Write(Core::Scene& scene, const uuids::uuid& sceneUUID, const std::filesystem::path& outputPath);
 
 	private:
 		std::unordered_map<const Core::SceneObject*, uuids::uuid> m_NodeUUIDs;
