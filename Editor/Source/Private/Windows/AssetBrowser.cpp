@@ -61,19 +61,22 @@ namespace Nightbird::Editor
 		for (const auto& entry : std::filesystem::directory_iterator(m_Context.m_CurrentPath))
 		{
 			const auto& path = entry.path();
+			if (path.extension() == ".assetinfo")
+				continue;
+
 			const std::string name = path.filename().string();
 			bool selected = (path == m_Context.m_SelectedPath);
 			bool isRenaming = (path == m_RenamingPath);
-
+			
 			ImGui::PushID(name.c_str());
 
-			if (entry.is_directory())
+			if (isRenaming)
 			{
-				if (isRenaming)
-				{
-					RenderRenameItem(path);
-				}
-				else
+				RenderRenameInput(path);
+			}
+			else
+			{
+				if (entry.is_directory())
 				{
 					if (ImGui::Selectable(name.c_str(), selected))
 					{
@@ -88,14 +91,7 @@ namespace Nightbird::Editor
 
 					RenderItemContextMenu(path);
 				}
-			}
-			else if (entry.is_regular_file())
-			{
-				if (isRenaming)
-				{
-					RenderRenameItem(path);
-				}
-				else
+				else if (entry.is_regular_file())
 				{
 					if (ImGui::Selectable(name.c_str(), selected))
 					{
@@ -135,7 +131,7 @@ namespace Nightbird::Editor
 					RenderItemContextMenu(path);
 				}
 			}
-
+			
 			ImGui::PopID();
 		}
 
@@ -206,7 +202,7 @@ namespace Nightbird::Editor
 		}
 	}
 
-	void AssetBrowser::RenderRenameItem(const std::filesystem::path& path)
+	void AssetBrowser::RenderRenameInput(const std::filesystem::path& path)
 	{
 		if (m_RenameFocusRequested)
 		{
@@ -230,8 +226,12 @@ namespace Nightbird::Editor
 				{
 					std::error_code errorCode;
 					std::filesystem::rename(path, newPath, errorCode);
-					if (!errorCode && m_Context.m_SelectedPath == path)
-						m_Context.m_SelectedPath = newPath;
+					if (!errorCode)
+					{
+						m_Context.GetImportManager().OnPathRenamed(path, newPath);
+						if (m_Context.m_SelectedPath == path)
+							m_Context.m_SelectedPath = newPath;
+					}
 				}
 			}
 

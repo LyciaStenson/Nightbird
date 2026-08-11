@@ -34,6 +34,8 @@ namespace Nightbird::Editor
 		Importer* FindImporter(const std::filesystem::path& path) const;
 
 		void Register(AssetInfo assetInfo);
+
+		void OnPathRenamed(const std::filesystem::path& oldPath, const std::filesystem::path& newPath);
 		
 		Core::SceneReadResult LoadScene(const uuids::uuid& uuid) override;
 
@@ -55,5 +57,6 @@ namespace Nightbird::Editor
 
 		void GenerateAssetInfoFile(const std::filesystem::path& assetPath);
 		void ReadAssetInfoFile(const std::filesystem::path& assetInfoPath);
+		void RelocateAssetInfoFile(AssetInfo& assetInfo, const std::filesystem::path& newAssetPath);
 	};
 }

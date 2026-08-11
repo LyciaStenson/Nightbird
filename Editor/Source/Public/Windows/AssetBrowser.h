@@ -20,7 +20,7 @@ namespace Nightbird::Editor
 
 	private:
 		void RenderItemContextMenu(const std::filesystem::path& path);
-		void RenderRenameItem(const std::filesystem::path& path);
+		void RenderRenameInput(const std::filesystem::path& path);
 
 		EditorContext& m_Context;
 

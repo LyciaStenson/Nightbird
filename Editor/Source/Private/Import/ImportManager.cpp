@@ -124,6 +124,28 @@ namespace Nightbird::Editor
 		m_AssetInfos[uuid] = std::move(assetInfo);
 	}
 
+	void ImportManager::OnPathRenamed(const std::filesystem::path& oldPath, const std::filesystem::path& newPath)
+	{
+		for (auto& [uuid, assetInfo] : m_AssetInfos)
+		{
+			if (assetInfo.path == oldPath)
+			{
+				RelocateAssetInfoFile(assetInfo, newPath);
+				continue;
+			}
+
+			auto [mismatch, unused] = std::mismatch(oldPath.begin(), oldPath.end(), assetInfo.path.begin(), assetInfo.path.end());
+			bool isUnderOldPath = (mismatch == oldPath.end() && assetInfo.path != oldPath);
+
+			if (isUnderOldPath)
+			{
+				std::filesystem::path relative = assetInfo.path.lexically_relative(oldPath);
+				std::filesystem::path relocated = newPath / relative;
+				RelocateAssetInfoFile(assetInfo, relocated);
+			}
+		}
+	}
+
 	std::shared_ptr<Core::Mesh> ImportManager::LoadMesh(const uuids::uuid& uuid)
 	{
 		Core::Log::Warning("ImportManager: Individual mesh loading not yet supported");
@@ -336,5 +358,27 @@ namespace Nightbird::Editor
 		assetInfo.path = assetInfoPathString.substr(0, assetInfoPathString.size() - std::string(".assetinfo").size());
 		
 		m_AssetInfos[assetInfo.uuid] = std::move(assetInfo);
+	}
+
+	void ImportManager::RelocateAssetInfoFile(AssetInfo& assetInfo, const std::filesystem::path& newAssetPath)
+	{
+		Importer* importer = FindImporter(newAssetPath);
+		bool hasEmbeded = importer && importer->HasEmbeddedAssetInfo();
+
+		if (!hasEmbeded)
+		{
+			std::filesystem::path oldAssetInfoPath = assetInfo.path.string() + ".assetinfo";
+			std::filesystem::path newAssetInfoPath = newAssetPath.string() + ".assetinfo";
+
+			if (std::filesystem::exists(oldAssetInfoPath))
+			{
+				std::error_code errorCode;
+				std::filesystem::rename(oldAssetInfoPath, newAssetInfoPath, errorCode);
+				if (errorCode)
+					Core::Log::Warning("ImportManager: Failed to move .assetinfo for: " + assetInfo.path.string());
+			}
+		}
+
+		assetInfo.path = newAssetPath;
 	}
 }
