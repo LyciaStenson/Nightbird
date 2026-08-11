@@ -31,6 +31,7 @@ namespace Nightbird::Editor
 		ImportManager& GetImportManager() const;
 		CookManager& GetCookManager() const;
 
+		std::filesystem::path m_CurrentPath;
 		std::filesystem::path m_SelectedPath;
 
 	private:

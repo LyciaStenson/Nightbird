@@ -111,7 +111,7 @@ namespace Nightbird::Editor
 				if (ImGui::MenuItem("Save Scene"))
 				{
 					TextSceneWriter sceneWriter;
-					sceneWriter.Write(m_Context.GetEngine().GetScene(), "TestScene", GenerateUUID(), m_Context.GetImportManager().GetAssetsDir() / "Scenes/TestScene.ntscene");
+					sceneWriter.Write(m_Context.GetEngine().GetScene(), "NewScene", GenerateUUID(), m_Context.m_CurrentPath / "NewScene.ntscene");
 				}
 				if (ImGui::MenuItem("Build"))
 				{
