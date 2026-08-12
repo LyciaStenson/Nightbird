@@ -1,5 +1,7 @@
 #pragma once
 
+#include <uuid.h>
+
 #include <filesystem>
 
 namespace Nightbird::Core
@@ -30,6 +32,8 @@ namespace Nightbird::Editor
 
 		ImportManager& GetImportManager() const;
 		CookManager& GetCookManager() const;
+
+		uuids::uuid m_CurrentSceneUUID;
 
 		std::filesystem::path m_CurrentPath;
 		std::filesystem::path m_SelectedPath;

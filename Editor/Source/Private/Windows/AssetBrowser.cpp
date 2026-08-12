@@ -123,6 +123,7 @@ namespace Nightbird::Editor
 								for (auto& child : result.root->GetChildren())
 									scene->GetRoot()->AddChild(std::move(child));
 
+								m_Context.m_CurrentSceneUUID = assetInfo->uuid;
 								m_Context.GetEngine().SetScene(std::move(scene));
 							}
 						}
@@ -151,7 +152,18 @@ namespace Nightbird::Editor
 			{
 				TextSceneWriter writer;
 				Core::Scene scene;
-				writer.Write(scene, GenerateUUID(), m_Context.m_CurrentPath / "NewScene.ntscene");
+
+				uuids::uuid uuid = GenerateUUID();
+				std::filesystem::path outputPath = m_Context.m_CurrentPath / "NewScene.ntscene";
+
+				AssetInfo assetInfo;
+				assetInfo.uuid = uuid;
+				assetInfo.importer = "text_scene";
+				assetInfo.path = outputPath;
+
+				writer.Write(scene, uuid, outputPath);
+
+				m_Context.GetImportManager().Register(std::move(assetInfo));
 			}
 
 			if (ImGui::MenuItem("New Cubemap"))
