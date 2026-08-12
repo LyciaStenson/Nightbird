@@ -100,12 +100,14 @@ namespace Nightbird::Editor
 		ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow;
 		if (object == m_Context.GetSelectedObject())
 			flags |= ImGuiTreeNodeFlags_Selected;
-
 		if (object->GetChildren().empty() || object->HasSourceScene())
 			flags |= ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen;
 
 		bool opened = ImGui::TreeNodeEx(object, flags, "%s", object->GetName().c_str());
-
+		ImVec2 itemMin = ImGui::GetItemRectMin();
+		ImVec2 itemMax = ImGui::GetItemRectMax();
+		float itemHeight = itemMax.y - itemMin.y;
+		
 		if (ImGui::IsItemHovered() && ImGui::IsMouseReleased(ImGuiMouseButton_Left))
 			m_Context.SelectObject(object);
 
@@ -118,11 +120,49 @@ namespace Nightbird::Editor
 
 		if (ImGui::BeginDragDropTarget())
 		{
+			float mouseY = ImGui::GetMousePos().y;
+			float relativeY = (mouseY - itemMin.y) / itemHeight;
+
+			enum class DropZone { Before, Into, After };
+			DropZone zone = DropZone::Into;
+			if (relativeY < 0.25f)
+				zone = DropZone::Before;
+			else if (relativeY > 0.75f)
+				zone = DropZone::After;
+
+			if (zone != DropZone::Into)
+			{
+				float lineY = (zone == DropZone::Before) ? itemMin.y : itemMax.y;
+				float fullRight = ImGui::GetWindowPos().x + ImGui::GetWindowContentRegionMax().x;
+
+				ImU32 dragDropTargetColor = ImGui::GetColorU32(ImGuiCol_DragDropTarget);
+				ImGui::PushStyleColor(ImGuiCol_DragDropTarget, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
+
+				ImGui::GetWindowDrawList()->AddLine(ImVec2(itemMin.x, lineY), ImVec2(fullRight, lineY), dragDropTargetColor, 2.0f);
+			}
+
 			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("SCENE_OBJECT"))
 			{
 				Core::SceneObject* received = *static_cast<Core::SceneObject**>(payload->Data);
 				if (received && received != object)
-					received->SetParent(object);
+				{
+					if (zone == DropZone::Into)
+					{
+						received->SetParent(object);
+					}
+					else
+					{
+						Core::SceneObject* targetParent = object->GetParent();
+						if (targetParent && received != targetParent)
+						{
+							int index = targetParent->GetChildIndex(object);
+							if (zone == DropZone::After)
+								index += 1;
+							received->SetParent(targetParent, index);
+						}
+					}
+				}
+				dropHandled = true;
 			}
 			else if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ASSET_UUID"))
 			{
@@ -131,9 +171,29 @@ namespace Nightbird::Editor
 				{
 					Core::SceneReadResult result = m_Context.GetImportManager().LoadScene(*droppedUUID);
 					result.root->SetSourceSceneUUID(*droppedUUID);
-					object->AddChild(std::move(result.root));
+
+					if (zone == DropZone::Into)
+					{
+						object->AddChild(std::move(result.root));
+					}
+					else
+					{
+						Core::SceneObject* targetParent = object->GetParent();
+						int index = targetParent ? targetParent->GetChildIndex(object) : -1;
+						if (zone == DropZone::After && index >= 0)
+							index += 1;
+						if (targetParent)
+							targetParent->AddChild(std::move(result.root), index);
+						else
+							object->AddChild(std::move(result.root));
+					}
 				}
+				dropHandled = true;
 			}
+
+			if (zone != DropZone::Into)
+				ImGui::PopStyleColor();
+			
 			ImGui::EndDragDropTarget();
 		}
 

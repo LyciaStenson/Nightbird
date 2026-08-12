@@ -35,12 +35,15 @@ namespace Nightbird::Core
 		void SetScene(Scene* scene);
 
 		SceneObject* GetParent() const;
-		void SetParent(SceneObject* newParent);
-
+		void SetParent(SceneObject* newParent, int insertIndex = -1);
+		
+		void AddChild(std::unique_ptr<SceneObject> child, int insertIndex = -1);
+		void ReorderChild(SceneObject* child, int insertIndex);
+		std::unique_ptr<SceneObject> DetachChild(SceneObject* child);
+		
+		int GetChildIndex(const SceneObject* child) const;
 		const std::vector<std::unique_ptr<SceneObject>>& GetChildren() const;
 		std::vector<std::unique_ptr<SceneObject>>& GetChildren();
-		void AddChild(std::unique_ptr<SceneObject> child);
-		std::unique_ptr<SceneObject> DetachChild(SceneObject* child);
 
 		bool HasSourceScene() const;
 		const std::optional<uuids::uuid>& GetSourceSceneUUID() const;

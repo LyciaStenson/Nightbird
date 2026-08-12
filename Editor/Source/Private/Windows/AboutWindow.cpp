@@ -26,7 +26,7 @@ namespace Nightbird::Editor
 		ImGui::Separator();
 		ImGui::Dummy(ImVec2(0.0f, 1.0f));
 
-		ImGui::Text("dev-0.1.0");
+		ImGui::Text("Version dev-0.1.0");
 
 		ImGui::Dummy(ImVec2(0.0f, 1.0f));
 		ImGui::Separator();
