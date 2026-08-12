@@ -90,7 +90,7 @@ namespace Nightbird::Editor
 		std::array<std::shared_ptr<Core::Texture>, 6> textures;
 		for (int i = 0; i < 6; ++i)
 		{
-			auto texture = importManager->Load<Core::Texture>(faceUUIDs[i]).lock();
+			auto texture = importManager->Load<Core::Texture>(faceUUIDs[i]);
 			if (!texture)
 			{
 				Core::Log::Error("TextCubemapImporter: Failed to load face " + std::string(faceNames[i]));

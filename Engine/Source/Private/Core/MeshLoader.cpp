@@ -60,7 +60,7 @@ namespace Nightbird::Core
 				std::array<uint8_t, 16> uuidBytes;
 				reader.ReadRawBytes(uuidBytes.data(), 16);
 				uuids::uuid materialUUID(uuidBytes);
-				material = assetManager.Load<Material>(materialUUID).lock();
+				material = assetManager.Load<Material>(materialUUID);
 			}
 
 			primitives.emplace_back(std::move(vertices), std::move(indices), material);

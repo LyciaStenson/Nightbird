@@ -20,11 +20,15 @@ namespace Nightbird::Core
 		virtual ~AssetManager() = default;
 		
 		template<typename T>
-		std::weak_ptr<T> Load(const uuids::uuid& uuid)
+		std::shared_ptr<T> Load(const uuids::uuid& uuid)
 		{
 			auto it = m_Cache.find(uuid);
 			if (it != m_Cache.end())
-				return std::static_pointer_cast<T>(it->second);
+			{
+				if (auto locked = std::static_pointer_cast<T>(it->second.lock()))
+					return locked;
+				m_Cache.erase(it);
+			}
 
 			std::shared_ptr<T> asset = LoadInternal<T>(uuid);
 			if (asset)
@@ -73,6 +77,6 @@ namespace Nightbird::Core
 			return nullptr;
 		}
 		
-		std::unordered_map<uuids::uuid, std::shared_ptr<void>> m_Cache;
+		std::unordered_map<uuids::uuid, std::weak_ptr<void>> m_Cache;
 	};
 }

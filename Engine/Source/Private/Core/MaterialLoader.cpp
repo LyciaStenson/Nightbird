@@ -57,7 +57,7 @@ namespace Nightbird::Core
 			std::array<uint8_t, 16> uuidBytes;
 			reader.ReadRawBytes(uuidBytes.data(), 16);
 			uuids::uuid textureUUID(uuidBytes);
-			material->baseColorTexture = assetManager.Load<Texture>(textureUUID).lock();
+			material->baseColorTexture = assetManager.Load<Texture>(textureUUID);
 		}
 
 		uint8_t hasMetallicRoughness = reader.ReadUInt8();
@@ -66,7 +66,7 @@ namespace Nightbird::Core
 			std::array<uint8_t, 16> uuidBytes;
 			reader.ReadRawBytes(uuidBytes.data(), 16);
 			uuids::uuid textureUUID(uuidBytes);
-			material->metallicRoughnessTexture = assetManager.Load<Texture>(textureUUID).lock();
+			material->metallicRoughnessTexture = assetManager.Load<Texture>(textureUUID);
 		}
 
 		uint8_t hasNormal = reader.ReadUInt8();
@@ -75,7 +75,7 @@ namespace Nightbird::Core
 			std::array<uint8_t, 16> uuidBytes;
 			reader.ReadRawBytes(uuidBytes.data(), 16);
 			uuids::uuid textureUUID(uuidBytes);
-			material->normalTexture = assetManager.Load<Texture>(textureUUID).lock();
+			material->normalTexture = assetManager.Load<Texture>(textureUUID);
 		}
 
 		return material;

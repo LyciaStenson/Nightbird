@@ -79,7 +79,7 @@ namespace Nightbird::Editor
 				return {};
 			}
 			
-			auto texture = assetManager.Load<Core::Texture>(*faceUUID).lock();
+			auto texture = assetManager.Load<Core::Texture>(*faceUUID);
 			if (!texture)
 			{
 				Core::Log::Error("CubemapCooker: Failed to load face: " + std::string(s_FaceNames[i]));

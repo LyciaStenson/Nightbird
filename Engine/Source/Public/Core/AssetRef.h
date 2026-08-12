@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Core/AssetManager.h>
+#include "Core/AssetManager.h"
 
 #include <uuid.h>
 
@@ -14,18 +14,18 @@ namespace Nightbird::Core
 	public:
 		const uuids::uuid& GetUUID() const { return m_UUID; }
 
-		bool IsValid() const { return !m_Asset.expired(); }
+		bool IsValid() const { return m_Asset != nullptr; }
 
-		std::shared_ptr<T> Get() const { return m_Asset.lock(); }
+		std::shared_ptr<T> Get() const { return m_Asset; }
 
 		explicit operator bool() const { return IsValid(); }
 
-		void Resolve(std::weak_ptr<T> asset) { m_Asset = asset; }
+		void Resolve(std::shared_ptr<T> asset) { m_Asset = asset; }
 		void SetUUID(const uuids::uuid& uuid) { m_UUID = uuid; }
 
 	private:
 		// UUID must be first member for reflection
 		uuids::uuid m_UUID;
-		std::weak_ptr<T> m_Asset;
+		std::shared_ptr<T> m_Asset;
 	};
 }
