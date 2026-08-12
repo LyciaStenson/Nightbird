@@ -148,7 +148,8 @@ namespace Nightbird::Editor
 				{
 					if (zone == DropZone::Into)
 					{
-						received->SetParent(object);
+						if (!object->HasSourceScene())
+							received->SetParent(object);
 					}
 					else
 					{
