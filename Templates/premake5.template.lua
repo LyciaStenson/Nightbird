@@ -124,6 +124,10 @@ project "%PROJECT_NAME%"
 		kind "ConsoleApp"
 	filter { }
 
+	filter { "action:gmake*" }
+		disablewarnings { "invalid-offsetof" }
+	filter { }
+
 	local outBinDir = "%{wks.location}/Binaries/" .. outputdir
 
 	targetdir (outBinDir)
